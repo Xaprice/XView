@@ -261,6 +261,12 @@
     <Compile Include="UserControls\CapturePara.Designer.cs">
       <DependentUpon>CapturePara.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\CustomImageBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserControls\ImagePara.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -292,6 +298,7 @@
       <DependentUpon>XHistogramPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="utils\ConfigManager.cs" />
+    <Compile Include="utils\LogUtil.cs" />
     <Compile Include="utils\WMMSGHelper.cs" />
     <Compile Include="utils\XMessageDialog.cs" />
     <Compile Include="Views\AdvancedSettingForm.cs">

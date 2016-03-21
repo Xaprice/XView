@@ -1,0 +1,4 @@
+E:\work\repository\xview\DocToolKit\bin\Debug\DocToolKit.dll
+E:\work\repository\xview\DocToolKit\bin\Debug\DocToolKit.pdb
+E:\work\repository\xview\DocToolKit\obj\Debug\DocToolKit.dll
+E:\work\repository\xview\DocToolKit\obj\Debug\DocToolKit.pdb

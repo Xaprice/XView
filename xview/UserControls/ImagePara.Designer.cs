@@ -208,6 +208,7 @@
             this._trackBar3DAntiNoise.Enabled = false;
             this._trackBar3DAntiNoise.Location = new System.Drawing.Point(56, 554);
             this._trackBar3DAntiNoise.Margin = new System.Windows.Forms.Padding(2);
+            this._trackBar3DAntiNoise.Maximum = 255;
             this._trackBar3DAntiNoise.Name = "_trackBar3DAntiNoise";
             this._trackBar3DAntiNoise.Size = new System.Drawing.Size(150, 27);
             this._trackBar3DAntiNoise.TabIndex = 30;
@@ -333,6 +334,7 @@
             this._trackBarAntiNoise.Enabled = false;
             this._trackBarAntiNoise.Location = new System.Drawing.Point(56, 501);
             this._trackBarAntiNoise.Margin = new System.Windows.Forms.Padding(2);
+            this._trackBarAntiNoise.Maximum = 99;
             this._trackBarAntiNoise.Name = "_trackBarAntiNoise";
             this._trackBarAntiNoise.Size = new System.Drawing.Size(136, 25);
             this._trackBarAntiNoise.TabIndex = 18;
@@ -345,6 +347,7 @@
             this._trackBarSharpness.Enabled = false;
             this._trackBarSharpness.Location = new System.Drawing.Point(56, 449);
             this._trackBarSharpness.Margin = new System.Windows.Forms.Padding(2);
+            this._trackBarSharpness.Maximum = 99;
             this._trackBarSharpness.Name = "_trackBarSharpness";
             this._trackBarSharpness.Size = new System.Drawing.Size(136, 24);
             this._trackBarSharpness.TabIndex = 17;
@@ -859,14 +862,14 @@
             // layoutControlItem14
             // 
             this.layoutControlItem14.Control = this._trackBarSharpness;
-            this.layoutControlItem14.CustomizationFormText = "锐度";
+            this.layoutControlItem14.CustomizationFormText = "清晰度";
             this.layoutControlItem14.Location = new System.Drawing.Point(0, 24);
             this.layoutControlItem14.MaxSize = new System.Drawing.Size(182, 28);
             this.layoutControlItem14.MinSize = new System.Drawing.Size(182, 28);
             this.layoutControlItem14.Name = "layoutControlItem14";
             this.layoutControlItem14.Size = new System.Drawing.Size(196, 28);
             this.layoutControlItem14.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
-            this.layoutControlItem14.Text = "锐度";
+            this.layoutControlItem14.Text = "清晰度";
             this.layoutControlItem14.TextSize = new System.Drawing.Size(39, 14);
             // 
             // layoutControlItem15

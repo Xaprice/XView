@@ -13,13 +13,13 @@ using Emgu.CV.Structure;
 using System.Timers;
 using xview.common;
 using xview.utils;
+using xview.UserControls;
 
 namespace xview.Forms
 {
     public partial class PreviewForm : Form, xview.common.IZoomable
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(PreviewForm));
-        private static object _lockHelper = new object();
 
         private static int frameWidth = 0;
         private static int frameHeight = 0;
@@ -34,7 +34,7 @@ namespace xview.Forms
         /// </summary>
         private static int _frameCnt = 0;
 
-        private static System.Timers.Timer _timerMutiCapture = new System.Timers.Timer();
+        private System.Timers.Timer _timerMutiCapture = new System.Timers.Timer();
 
         /// <summary>
         /// 是否标记过曝光区域
@@ -62,10 +62,94 @@ namespace xview.Forms
         private static readonly double _zoomStep = 0.05;
         private Func<double, double> _funcLimitedZoom = (x => Math.Max(Math.Min(x, _maxZoomScale), _minZoomScale));
 
+        /*******************************************************************************
+         * 拍照/录像
+         *******************************************************************************/
+        /// <summary>
+        /// 拍照
+        /// </summary>
+        public void StartSingleCapture()
+        {
+            try
+            {
+                Snapshot();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+            finally
+            {
+                _captureState = CaptureState.NO_CAPTURE;
+            }
+        }
+
+        /// <summary>
+        /// 设置连拍定时器
+        /// </summary>
+        public  void StartMutiCap()
+        {
+            _captureCnt = 0;
+            _timerMutiCapture.Interval = XCamera.GetInstance().CapturePara.MutiCaptureTimeStep;
+            _timerMutiCapture.Elapsed += _timerMutiCapture_Tick;
+            _timerMutiCapture.Start();
+        }
+
+        /// <summary>
+        /// 停止连拍计时器
+        /// </summary>
+        public void StopMutiCap()
+        {
+            _timerMutiCapture.Stop();
+            _timerMutiCapture.Elapsed -= _timerMutiCapture_Tick;
+            _captureCnt = 0;
+        }
+     
+        /// <summary>
+        /// 定时器处理方法
+        /// </summary>
+        private void _timerMutiCapture_Tick(object sender, ElapsedEventArgs e)
+        {
+            //if (_captureState == CaptureState.MULT_CAPTURE_TRIGGER_OFF)
+            //{
+            //    _captureState = CaptureState.MULT_CAPTURE_TRIGGER_ON;
+            //}
+            try
+            {
+                if (_captureCnt < XCamera.GetInstance().CapturePara.MutiCaptureCount)
+                {
+                    Snapshot();
+                    _captureCnt++;
+                }
+                else
+                {
+                    StopMutiCap();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void Snapshot()
+        {
+            string imgFileName = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-sss");
+            string fullFileName = XCamera.GetInstance().CaptureImage(imgFileName);
+            if (!String.IsNullOrEmpty(fullFileName))
+            {
+                XTwoExtraValueEventArgs<string, string> eventArgs = new XTwoExtraValueEventArgs<string, string>()
+                {
+                    Data1 = fullFileName,
+                    Data2 = imgFileName
+                };
+                PublishImageSavedEvent(eventArgs);
+            }
+        }
+
         #region 接口
         public bool IsCloseWithMainForm { get; set; }
 
-        //public bool IsSettingPreviewROI { get; set; }
         public SettingROI SettingROIType { get; set; }
                 
         /// <summary>
@@ -87,6 +171,9 @@ namespace xview.Forms
                     cam.UnInit();
                 }
                 _cameraCallbackProc = new XCamera.DelegateProc(SnapThreadCallback);
+
+                //test
+
                 if (cam.Init(_cameraCallbackProc, cameraName, pictureBox.Handle))
                 {
                     if (cam.Play())
@@ -150,9 +237,22 @@ namespace xview.Forms
         #endregion
 
         #region 构造方法
+
+        private CustomImageBox pictureBox;
+
+        //private CustomPictureBox pictureBox;
+
         public PreviewForm()
         {
             InitializeComponent();
+
+            //test code
+            pictureBox = new CustomImageBox();
+            pictureBox.init();
+            pictureBox.Dock = DockStyle.None;
+            this.Controls.Add(pictureBox);
+
+            PreviewForm.imageBox = pictureBox;
         }
         #endregion
 
@@ -219,6 +319,8 @@ namespace xview.Forms
         #endregion
 
         #region 回调
+        private static Emgu.CV.UI.ImageBox imageBox = null;
+
         /// <summary>
         /// 相机回调函数
         /// </summary>
@@ -247,7 +349,10 @@ namespace xview.Forms
                 //---------
                 if (!_isCustomDrawing)
                 {
-                    emDSCameraStatus status = XCamera.CameraDisplayRGB24(m_iCam, pBmp24, ref sFrInfo);
+                    //test code 原先刷新帧图像的方法
+                    //emDSCameraStatus status = XCamera.CameraDisplayRGB24(m_iCam, pBmp24, ref sFrInfo);
+                    //尝试新的方法
+                    imageBox.Image = _frameImage;
                 }
                     
                 return 0;
@@ -304,25 +409,7 @@ namespace xview.Forms
         #endregion
 
         #region 定时器
-        private static void setupTimer(double interval)
-        {
-            _timerMutiCapture.Interval = interval;
-            _timerMutiCapture.Elapsed += _timerMutiCapture_Tick;
-            _timerMutiCapture.Start();
-        }
 
-        private static void stopTimer()
-        {
-            _timerMutiCapture.Stop();
-        }
-
-        private static void _timerMutiCapture_Tick(object sender, ElapsedEventArgs e)
-        {
-            if (_captureState == CaptureState.MULT_CAPTURE_TRIGGER_OFF)
-            {
-                _captureState = CaptureState.MULT_CAPTURE_TRIGGER_ON;
-            }
-        }
         #endregion
 
         #region 相机采集
@@ -331,43 +418,38 @@ namespace xview.Forms
             if (_captureState == CaptureState.NO_CAPTURE)
                 return;
             XCamera cam = XCamera.GetInstance();
-            HandleSingleCapture(img, cam);
-            HandleMutiCapture(img, cam);
+            //HandleSingleCapture(img, cam);
+            //HandleMutiCapture(img, cam);
             HandleFluCapture(img, cam);
             HandleVideoCapture(pBmp24, ref sFrInfo);
         }
 
-        private static void HandleSingleCapture(Image<Bgr, Byte> img, XCamera cam)
-        {
-
-        }
-
-        private static void HandleMutiCapture(Image<Bgr, Byte> img, XCamera cam)
-        {
-            try
-            {
-                if (_captureState == CaptureState.MULT_CAPTURE_TRIGGER_ON)
-                {
-                    if (_captureCnt < cam.CapturePara.MutiCaptureCount)
-                    {
-                        SaveImageToDefaultPath(img, cam);
-                        _captureState = CaptureState.MULT_CAPTURE_TRIGGER_OFF;
-                        _captureCnt++;
-                    }
-                    else
-                    {
-                        //_timerMutiCapture.Enabled = false;
-                        _timerMutiCapture.Stop();
-                        _captureState = CaptureState.NO_CAPTURE;
-                        _captureCnt = 0;
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
+        //private static void HandleMutiCapture(Image<Bgr, Byte> img, XCamera cam)
+        //{
+        //    try
+        //    {
+        //        if (_captureState == CaptureState.MULT_CAPTURE_TRIGGER_ON)
+        //        {
+        //            if (_captureCnt < cam.CapturePara.MutiCaptureCount)
+        //            {
+        //                SaveImageToDefaultPath(img, cam);
+        //                _captureState = CaptureState.MULT_CAPTURE_TRIGGER_OFF;
+        //                _captureCnt++;
+        //            }
+        //            else
+        //            {
+        //                //_timerMutiCapture.Enabled = false;
+        //                _timerMutiCapture.Stop();
+        //                _captureState = CaptureState.NO_CAPTURE;
+        //                _captureCnt = 0;
+        //            }
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        _logger.Error(ex.Message);
+        //    }
+        //}
 
         private static void HandleFluCapture(Image<Bgr, Byte> img, XCamera cam)
         {
@@ -457,71 +539,29 @@ namespace xview.Forms
             }
         }
 
-        public void StartSingleCapture()
-        {
-            XCamera cam = XCamera.GetInstance();
-            try
-            {
-                string imgFileName = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-sss");
-                emDSFileType fileType = emDSFileType.FILE_JPG;
-                //if (cam.CapturePara.ImageFileType == emDSFileType.FILE_JPG)
-                //{
-                //    imgFileName += ".jpg";
-                //    fileType = emDSFileType.FILE_JPG;
-                //}
-                //else if (cam.CapturePara.ImageFileType == emDSFileType.FILE_BMP)
-                //{
-                //    imgFileName += ".bmp";
-                //    fileType = emDSFileType.FILE_BMP;
-                //}
-                //else
-                //{
-                //    imgFileName += ".png";
-                //    fileType = emDSFileType.FILE_PNG;
-                //}
-                //string fullFileName = ConfigManager.GetAppConfig("WorkPathImage") + "\\" + imgFileName;
-                string fullFileName = XCamera.GetInstance().CapturePara.ImageSavePath + "\\" + imgFileName;
-                byte quality = Convert.ToByte(cam.CapturePara.ImageQuality);
 
-                bool isSuccess = cam.CaptureImageToFile(fullFileName, fileType, quality);
-                _captureState = CaptureState.NO_CAPTURE;
-                if (isSuccess)
-                {
-                    XTwoExtraValueEventArgs<string, string> eventArgs = new XTwoExtraValueEventArgs<string, string>()
-                    {
-                        Data1 = fullFileName,
-                        Data2 = imgFileName
-                    };
-                    PublishImageSavedEvent(eventArgs);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
 
         public static void StartFluCapture()
         {
             _captureState = CaptureState.FLU_START_CAPTURE;
         }
 
-        public static void StartMutiCapture()
-        {
-            _timerMutiCapture.Interval = XCamera.GetInstance().CapturePara.MutiCaptureTimeStep;
-            _timerMutiCapture.Elapsed += _timerMutiCapture_Tick;
-            //_timerMutiCapture.AutoReset = false;
-            _captureState = CaptureState.MULT_CAPTURE_TRIGGER_ON;
-            //_timerMutiCapture.Enabled = true;
-            _timerMutiCapture.Start();
-        }
+        //public static void StartMutiCapture()
+        //{
+        //    _timerMutiCapture.Interval = XCamera.GetInstance().CapturePara.MutiCaptureTimeStep;
+        //    _timerMutiCapture.Elapsed += _timerMutiCapture_Tick;
+        //    //_timerMutiCapture.AutoReset = false;
+        //    _captureState = CaptureState.MULT_CAPTURE_TRIGGER_ON;
+        //    //_timerMutiCapture.Enabled = true;
+        //    _timerMutiCapture.Start();
+        //}
 
-        public static void StopMutiCapture()
-        {
-            //_timerMutiCapture.Enabled = false;
-            _timerMutiCapture.Stop();
-            _captureState = CaptureState.MULT_CAPTURE_TRIGGER_OFF;
-        }
+        //public static void StopMutiCapture()
+        //{
+        //    //_timerMutiCapture.Enabled = false;
+        //    _timerMutiCapture.Stop();
+        //    _captureState = CaptureState.MULT_CAPTURE_TRIGGER_OFF;
+        //}
 
         public static void StartVideoCapture()
         {
@@ -687,7 +727,7 @@ namespace xview.Forms
             pictureBox.Width = Convert.ToInt32(realSize.Width * factor);
             pictureBox.Height = Convert.ToInt32(realSize.Height * factor);
             pictureBox.Left = (workAreaWidth > pictureBox.Width) ? (workAreaWidth - pictureBox.Width) / 2 : 0;
-            pictureBox.Top = (workAreaHeight > pictureBox.Height) ? (workAreaHeight - pictureBox.Height) / 2 : 0; 
+            pictureBox.Top = (workAreaHeight > pictureBox.Height) ? (workAreaHeight - pictureBox.Height) / 2 : 0;
             XCamera.GetInstance().SetDisplaySize(pictureBox.Width, pictureBox.Height);
         }
 
@@ -710,31 +750,31 @@ namespace xview.Forms
         //}
         #endregion
 
-        private void UpdateDisplayWindow()
-        {
-            tDSImageSize tmpsize = new tDSImageSize();
-            int m_iRelsel = 0;
-            int nWidth = 640, nHeight = 480;
-            tDSCameraCapability dscapability = new tDSCameraCapability();
-            XCamera.CameraGetCapability(1, ref dscapability);
-            if (XCamera.CameraGetImageSizeSel(1, ref m_iRelsel, false) == emDSCameraStatus.STATUS_OK)
-            {
-                Byte[] arrtmp = new Byte[4];
-                XCamera.CopyMemory(Marshal.UnsafeAddrOfPinnedArrayElement(arrtmp, 0), dscapability.pImageSizeDesc + m_iRelsel * Marshal.SizeOf(tmpsize) + 52, 4);
-                nWidth = BitConverter.ToInt32(arrtmp, 0);
-                XCamera.CopyMemory(Marshal.UnsafeAddrOfPinnedArrayElement(arrtmp, 0), dscapability.pImageSizeDesc + m_iRelsel * Marshal.SizeOf(tmpsize) + 56, 4);
-                nHeight = BitConverter.ToInt32(arrtmp, 0);
-            }
+        //private void UpdateDisplayWindow()
+        //{
+        //    tDSImageSize tmpsize = new tDSImageSize();
+        //    int m_iRelsel = 0;
+        //    int nWidth = 640, nHeight = 480;
+        //    tDSCameraCapability dscapability = new tDSCameraCapability();
+        //    XCamera.CameraGetCapability(1, ref dscapability);
+        //    if (XCamera.CameraGetImageSizeSel(1, ref m_iRelsel, false) == emDSCameraStatus.STATUS_OK)
+        //    {
+        //        Byte[] arrtmp = new Byte[4];
+        //        XCamera.CopyMemory(Marshal.UnsafeAddrOfPinnedArrayElement(arrtmp, 0), dscapability.pImageSizeDesc + m_iRelsel * Marshal.SizeOf(tmpsize) + 52, 4);
+        //        nWidth = BitConverter.ToInt32(arrtmp, 0);
+        //        XCamera.CopyMemory(Marshal.UnsafeAddrOfPinnedArrayElement(arrtmp, 0), dscapability.pImageSizeDesc + m_iRelsel * Marshal.SizeOf(tmpsize) + 56, 4);
+        //        nHeight = BitConverter.ToInt32(arrtmp, 0);
+        //    }
 
-            pictureBox.Width = nWidth;
-            //pictureBox.Height = nHeight - 40;
-            pictureBox.Height = nHeight;
-            pictureBox.Left = 0;
-            //pictureBox.Top = 24;
-            pictureBox.Top = 0;
-            //---------------------------------------------------------------------------------------------------------------------------------------
-            XCamera.CameraSetDisplaySize(1, pictureBox.Width, pictureBox.Height);
-        }
+        //    pictureBox.Width = nWidth;
+        //    //pictureBox.Height = nHeight - 40;
+        //    pictureBox.Height = nHeight;
+        //    pictureBox.Left = 0;
+        //    //pictureBox.Top = 24;
+        //    pictureBox.Top = 0;
+        //    //---------------------------------------------------------------------------------------------------------------------------------------
+        //    XCamera.CameraSetDisplaySize(1, pictureBox.Width, pictureBox.Height);
+        //}
 
         private void PreviewForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -776,24 +816,6 @@ namespace xview.Forms
                 _logger.Error(ex.Message);
             }
         }
-
-        //public bool PreFilterMessage(ref Message m)
-        //{
-        //    if (m.Msg == 522)
-        //    {
-        //        short zDelta = WMMSGHelper.HIWORD(m.WParam.ToInt32());
-        //        if(zDelta > 0)
-        //        {
-        //            ZoomIn();
-        //        }
-        //        if(zDelta < 0)
-        //        {
-        //            ZoomOut();
-        //        }
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
         #region 鼠标事件
         private ToolTip _toolTip = new ToolTip();

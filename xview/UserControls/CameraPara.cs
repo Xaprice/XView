@@ -19,6 +19,9 @@ namespace xview.UserControls
 
         private bool _isInit = false;
 
+        /********************************************************************************
+         * 事件定义
+         ********************************************************************************/
         //设置AE ROI事件
         public delegate void SetAEROIEventHandler(object sender, EventArgs e);
         public event SetAEROIEventHandler SetAEROI;
@@ -42,7 +45,6 @@ namespace xview.UserControls
         }
 
         //切换分辨率事件
-
         public delegate void SwitchPreviewResolutionHandler(object sender, EventArgs e, int resolutioSel);
         public event SwitchPreviewResolutionHandler SwitchPreviewResolution;
         protected virtual void PublishSwitchPreviewResolutionEvent(EventArgs e, int resolutioSel)
@@ -53,25 +55,12 @@ namespace xview.UserControls
             }
         }
 
+        /********************************************************************************
+        * 构造与初始化
+        ********************************************************************************/
         public CameraPara()
         {
             InitializeComponent();
-        }
-
-        private void ExposurePara_Load(object sender, EventArgs e)
-        {
-            try
-            {
-	            if (this != null && IsHandleCreated)
-	            {
-	                //Init();
-                    //layoutControlItem13.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-	            }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
         }
 
         public void Init()
@@ -84,24 +73,19 @@ namespace xview.UserControls
 	            XCameraAePara aePara;
                 if (cam.GetAePara(out aePara))
 	            {
-                    _checkEditEnableAe.Checked = aePara.AeState;
-
-                    bool autoAdjustExpGain = false;
-                    bool autoAdjustExpTime = false;
+                    _checkBoxEnableAE.Checked = aePara.AeState;
                     if (aePara.AeMode == XAeModeDefine.AdjustExpGainAndTime)
                     {
-                        autoAdjustExpGain = autoAdjustExpTime = true;
+                        _comboBoxEditAEMode.SelectedIndex = 0;
                     }
                     else if(aePara.AeMode == XAeModeDefine.AdjustExpGain)
                     {
-                        autoAdjustExpGain = true;
+                        _comboBoxEditAEMode.SelectedIndex = 1;
                     }
                     else if (aePara.AeMode == XAeModeDefine.AdjustExpGain)
                     {
-                        autoAdjustExpTime = true;
+                        _comboBoxEditAEMode.SelectedIndex = 2;
                     }
-                    checkAdjustGain.Checked = autoAdjustExpGain;
-                    checkEditAdjustExpTime.Checked = autoAdjustExpTime;
 
 	                UpdateControlsByAePara(aePara);
                     InitExpTargetAndGainCtrls(aePara);
@@ -113,12 +97,12 @@ namespace xview.UserControls
                     InitFrameSpeedCtrls();
                     InitResolutionCombo();
 	            }
-                _checkEditEnableAe.CheckedChanged += _checkEditEnableAe_CheckedChanged;
-                checkAdjustGain.CheckedChanged += checkAdjustGain_CheckedChanged;
-                checkAdjustGain.EditValueChanging += checkAdjustGain_EditValueChanging;
-                checkEditAdjustExpTime.CheckedChanged +=checkEditAdjustExpTime_CheckedChanged;
-                checkEditAdjustExpTime.EditValueChanging +=checkEditAdjustExpTime_EditValueChanging;
 
+                //在初始化之后绑定事件响应方法，
+                _checkBoxEnableAE.CheckedChanged += _checkEditEnableAe_CheckedChanged;
+                _comboBoxEditAEMode.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+                _comboBoxEditAEMode.SelectedIndexChanged += _comboBoxEditAEMode_SelectedIndexChanged;
+              
             }
             catch (System.Exception ex)
             {
@@ -141,7 +125,6 @@ namespace xview.UserControls
             _trackBarControlAnalogGain.Maximum = Convert.ToInt32(aePara.AnalogGainParaRange.MaxValue * 10);
             _trackBarControlAnalogGain.Value = Convert.ToInt32(aePara.CurAnalogGain * 10);
             _labelAnalogGain.Text = _trackBarControlAnalogGain.Value.ToString();
-
         }
 
         private void InitExpTimeCtrls(ulong minExpTime, ulong maxExpTime, ulong curExpTime)
@@ -271,26 +254,18 @@ namespace xview.UserControls
         {
             if(aePara.AeState)
             {
-                //_checkEditEnableAe.CheckedChanged -= _checkEditEnableAe_CheckedChanged;
-                //_checkEditEnableAe.Checked = true;
-                //_checkEditEnableAe.CheckedChanged += _checkEditEnableAe_CheckedChanged;
                 _trackBarAeTarget.Enabled = true;
                 _btnSetAEROI.Enabled = true;
-                this.checkEditAdjustExpTime.Enabled = true;
-                this.checkAdjustGain.Enabled = true;
+                _comboBoxEditAEMode.Enabled = true;
                 UpdateExpControlsByAeMode(aePara.AeMode);
             }
             else
             {
-                //_checkEditEnableAe.CheckedChanged -= _checkEditEnableAe_CheckedChanged;
-                //_checkEditEnableAe.Checked = false;
-                //_checkEditEnableAe.CheckedChanged += _checkEditEnableAe_CheckedChanged;
                 _trackBarAeTarget.Enabled = false;
                 _btnSetAEROI.Enabled = false;
                 SetExpTimeControlEnableState(true);
                 SetExpGainControlEnableState(true);
-                this.checkEditAdjustExpTime.Enabled = false;
-                this.checkAdjustGain.Enabled = false;
+                _comboBoxEditAEMode.Enabled = false;
             }
         }
 
@@ -300,7 +275,7 @@ namespace xview.UserControls
             {
                 if (!_isInit)
                 {
-                    bool aeState = _checkEditEnableAe.Checked;
+                    bool aeState = _checkBoxEnableAE.Checked;
                     if (XCamera.GetInstance().SetAeState(aeState))
                     {
                         XCameraAePara aePara;
@@ -320,6 +295,19 @@ namespace xview.UserControls
                 }
             }
             catch (System.Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void _comboBoxEditAEMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if(XCamera.GetInstance().SetAeMode(this._comboBoxEditAEMode.SelectedIndex))
+                    UpdateExpControlsByAeMode(this._comboBoxEditAEMode.SelectedIndex);
+            }
+            catch (Exception ex)
             {
                 _logger.Error(ex.Message);
             }
@@ -510,43 +498,10 @@ namespace xview.UserControls
             }
         }
 
-        /// <summary>
-        /// 点击【调节增益】
-        /// </summary>
-        private void checkAdjustGain_CheckedChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                int aeMode = GetAeModeByCheckEditState();
-                if (XCamera.GetInstance().SetAeMode(aeMode))
-                    UpdateExpControlsByAeMode(aeMode);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
 
-        /// <summary>
-        /// 点击【调节曝光时间】
-        /// </summary>
-        private void checkEditAdjustExpTime_CheckedChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                int aeMode = GetAeModeByCheckEditState();
-                if(XCamera.GetInstance().SetAeMode(aeMode))
-                    UpdateExpControlsByAeMode(aeMode);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
 
         private void UpdateExpControlsByAeMode(int aeMode)
         {
-            
             bool enableExpGain = false;
             bool enableExpTime = false;
             if(aeMode == XAeModeDefine.AdjustExpGainAndTime)
@@ -571,27 +526,28 @@ namespace xview.UserControls
             SetExpGainControlEnableState(enableExpGain);
         }
 
-        private int GetAeModeByCheckEditState()
-        {
-            int aeMode;
-            if(checkAdjustGain.Checked && checkEditAdjustExpTime.Checked)
-            {
-                aeMode = XAeModeDefine.AdjustExpGainAndTime;
-            }
-            else if(checkAdjustGain.Checked && !checkEditAdjustExpTime.Checked)
-            {
-                aeMode = XAeModeDefine.AdjustExpGain;
-            }
-            else if (!checkAdjustGain.Checked && checkEditAdjustExpTime.Checked)
-            {
-                aeMode = XAeModeDefine.AdjustExpTime;
-            }
-            else
-            {
-                aeMode = XAeModeDefine.None;
-            }
-            return aeMode;
-        }
+        //private int GetAeModeByCheckEditState()
+        //{
+        //    int aeMode;
+        //    //if (_checkBoxAdjustGain.Checked && _checkBoxAdjustExpTime.Checked)
+        //    //{
+        //    //    aeMode = XAeModeDefine.AdjustExpGainAndTime;
+        //    //}
+        //    //else if (_checkBoxAdjustGain.Checked && !_checkBoxAdjustExpTime.Checked)
+        //    //{
+        //    //    aeMode = XAeModeDefine.AdjustExpGain;
+        //    //}
+        //    //else if (!_checkBoxAdjustGain.Checked && _checkBoxAdjustExpTime.Checked)
+        //    //{
+        //    //    aeMode = XAeModeDefine.AdjustExpTime;
+        //    //}
+        //    //else
+        //    //{
+        //    //    aeMode = XAeModeDefine.None;
+        //    //}
+
+        //    return aeMode;
+        //}
 
         private void SetExpTimeControlEnableState(bool enable)
         {
@@ -604,30 +560,6 @@ namespace xview.UserControls
         private void SetExpGainControlEnableState(bool enable)
         {
             _trackBarControlAnalogGain.Enabled = enable;
-        }
-
-        private void checkAdjustGain_EditValueChanging(object sender, DevExpress.XtraEditors.Controls.ChangingEventArgs e)
-        {
-            try
-            {
-                e.Cancel = !checkEditAdjustExpTime.Checked;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
-
-        private void checkEditAdjustExpTime_EditValueChanging(object sender, DevExpress.XtraEditors.Controls.ChangingEventArgs e)
-        {
-            try
-            {
-                e.Cancel = !checkAdjustGain.Checked;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
         }
 
         private void comboBoxEditCaptureRes_SelectedIndexChanged(object sender, EventArgs e)

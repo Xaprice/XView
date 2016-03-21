@@ -201,7 +201,9 @@ namespace xview
 	            for (int j = 0; j < capability.iImageSizeDec; j++)
 	            {
 	                CopyMemory(Marshal.UnsafeAddrOfPinnedArrayElement(pImagesize[j].acDescription, 0), pAddress, 32);
-	                resolutionDescription.Add(System.Text.Encoding.GetEncoding("GB2312").GetString(pImagesize[j].acDescription));
+                    string tempStr = System.Text.Encoding.GetEncoding("GB2312").GetString(pImagesize[j].acDescription);
+                    tempStr = tempStr.Substring(0, tempStr.IndexOf("\0") + 1);
+                    resolutionDescription.Add(tempStr);
 	                pAddress = pAddress + Marshal.SizeOf(pImagesize[j]);
 	            }
                 return true;
@@ -1764,6 +1766,22 @@ namespace xview
         #endregion
 
         #region 拍照与录像
+        public string CaptureImage(string fileName)
+        {
+            emDSFileType fileType = this.CapturePara.ImageFileType;
+            string fullFileName = XCamera.GetInstance().CapturePara.ImageSavePath + "\\" + fileName;
+            byte quality = Convert.ToByte(this.CapturePara.ImageQuality);
+
+            if (CaptureImageToFile(fullFileName, fileType, quality))
+            {
+                return fullFileName;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
         public bool CaptureImageToFile(string savePath, emDSFileType fileType, byte quality)
         {
             try

@@ -6,6 +6,9 @@ using System.Windows.Forms;
 
 namespace xview
 {
+    /// <summary>
+    /// 消息框
+    /// </summary>
     public class XMessageDialog
     {
         public static DialogResult Warning(string msg)

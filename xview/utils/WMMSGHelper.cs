@@ -5,6 +5,9 @@ using System.Text;
 
 namespace xview.utils
 {
+    /// <summary>
+    /// Window消息解析助手类
+    /// </summary>
     public class WMMSGHelper
     {
         public static ushort LOWORD(uint value)

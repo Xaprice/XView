@@ -107,8 +107,9 @@ namespace xview.UserControls
                 var cameraCamType = Convert.ToInt32(xview.utils.ConfigManager.GetAppConfig("CameraType"));
                 if(cameraCamType == 2)
                 {
-                    //3D noise reduction
-                    _trackBar3DAntiNoise.SetRange(capbility.sNoiseReductionRange.iMin, capbility.sNoiseReductionRange.iMax);
+                    //3D noise reduction，暂时未从文档中找到3D降噪参数范围值
+                    //_trackBar3DAntiNoise.SetRange(capbility.sNoiseReductionRange.iMin, capbility.sNoiseReductionRange.iMax);
+                    _trackBar3DAntiNoise.SetRange(0, 255);
                     bool enable3DNoiseReduction = false;
                     cam.Get3DNoiseReductionState(out enable3DNoiseReduction);
                     _checkEnable3DAntiNoise.Checked = enable3DNoiseReduction;
@@ -379,7 +380,7 @@ namespace xview.UserControls
             {
                 if (!_isInit)
                 {
-                    XCamera.GetInstance().Set3DNoiseReductionGain(_trackBarAntiNoise.Value);
+                    XCamera.GetInstance().Set3DNoiseReductionGain(_trackBar3DAntiNoise.Value);
                     UpdateLabels();
                 }
             }
@@ -429,7 +430,7 @@ namespace xview.UserControls
         {
             try
             {
-                	if (XCamera.GetInstance().Set3DNoiseReductionState(_checkEnableAntiNoise.Checked))
+                if (XCamera.GetInstance().Set3DNoiseReductionState(_checkEnable3DAntiNoise.Checked))
 	                {
 	                    _trackBar3DAntiNoise.Enabled = _checkEnable3DAntiNoise.Checked;
 	                }

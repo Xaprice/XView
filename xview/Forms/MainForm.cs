@@ -40,9 +40,9 @@ namespace xview
         #region 窗体函数
         public MainForm()
         {
-            //DevExpress.XtraSplashScreen.SplashScreenManager.ShowForm(this,typeof(SplashScreen1),true,true);
+            //DevExpress.XtraSplashScreen.SplashScreenManager.ShowForm(this,typeof(SplashScreen1),true,false);
             InitializeComponent();
-            DevExpress.XtraSplashScreen.SplashScreenManager.CloseForm(false, 1000, this);
+            DevExpress.XtraSplashScreen.SplashScreenManager.CloseForm(false, 0, this);
         }
 
         /// <summary>
@@ -50,7 +50,6 @@ namespace xview
         /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            DevExpress.XtraSplashScreen.SplashScreenManager.ShowForm(typeof(SplashScreen1));
             try
             {
                 Application.AddMessageFilter(this);
@@ -724,7 +723,8 @@ namespace xview
                 PreviewForm previewForm = GetPreviewChildForm();
                 if (previewForm != null)
                 {
-                    PreviewForm.StartMutiCapture();
+                    //PreviewForm.StartMutiCapture();
+                    previewForm.StartMutiCap();
                 }
             }
             catch (System.Exception ex)
@@ -844,8 +844,11 @@ namespace xview
                 if (string.IsNullOrEmpty(title))
                     title = "图像";
                 ImageForm newPage = new ImageForm(title, fileName, img);
+                newPage.Width = this.Width - (dockPanel.Width + 126);
+                newPage.Height = this.Height - 8;
                 newPage.MdiParent = this;
                 newPage.Show();
+                newPage.FitScreen();
                 UpdateControls();
             }
             catch (System.Exception ex)

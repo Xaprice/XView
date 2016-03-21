@@ -38,6 +38,10 @@ namespace xview
         private Image<Gray, Byte>[] originalRGBChannels;
         private ImageProps imageProps = new ImageProps();
 
+        private double _zoomFactor = 1.0;
+
+        private CustomImageBox _imageBox;
+
         public Image<Bgr, Byte> Image
         {
             get { return _imageBox.Image as Image<Bgr, Byte>; }
@@ -52,9 +56,20 @@ namespace xview
 
             originalImage = img;
             originalRGBChannels = img.Split();//BGR
+
+            _imageBox = new CustomImageBox();
+            _imageBox.init();
+            _imageBox.Dock = DockStyle.None;
+            this.Controls.Add(_imageBox);
             _imageBox.Image = originalImage.Clone();
+            //_imageBox.SetZoomScale(1.0, new Point(0, 0));
             this.Text = title;
             this.FullImageFileName = imgFileName;
+        }
+
+        private void ImageForm_Load(object sender, EventArgs e)
+        {
+            
         }
 
         private void ChildForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -115,16 +130,20 @@ namespace xview
         #region 缩放
         public double GetZoomFactor()
         {
-            return _imageBox.ZoomScale;
+            //return _imageBox.ZoomScale;
+            return _zoomFactor;
         }
 
         public void ZoomIn()
         {
             try
             {
-                double zoomInScale = _imageBox.ZoomScale;
-                zoomInScale += _zoomStep;
-                _imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
+                //double zoomInScale = _imageBox.ZoomScale;
+                //zoomInScale += _zoomStep;
+                //_imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
+
+                _zoomFactor += _zoomStep;
+                ZoomWindow(_zoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -136,9 +155,12 @@ namespace xview
         {
             try
             {
-                double zoomInScale = _imageBox.ZoomScale;
-                zoomInScale -= _zoomStep;
-                _imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
+                //double zoomInScale = _imageBox.ZoomScale;
+                //zoomInScale -= _zoomStep;
+                //_imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
+
+                _zoomFactor -= _zoomStep;
+                ZoomWindow(_zoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -150,14 +172,17 @@ namespace xview
         {
             try
             {
-                Size imageSize = this.Image.Size;
-                Size boxSize = _imageBox.Size;
-                double widthFactor = (double)imageSize.Width / (double)boxSize.Width;
-                double heightFactor = (double)imageSize.Height / (double)boxSize.Height;
-                double scale = Math.Max(widthFactor, heightFactor);
-                _imageBox.SetZoomScale(scale, new Point(0, 0));
-                _imageBox.HorizontalScrollBar.Value = 0;
-                _imageBox.VerticalScrollBar.Value = 0;
+                //Size imageSize = this.Image.Size;
+                //Size boxSize = _imageBox.Size;
+                //double widthFactor = (double)imageSize.Width / (double)boxSize.Width;
+                //double heightFactor = (double)imageSize.Height / (double)boxSize.Height;
+                //double scale = Math.Max(widthFactor, heightFactor);
+                //_imageBox.SetZoomScale(scale, new Point(0, 0));
+                //_imageBox.HorizontalScrollBar.Value = 0;
+                //_imageBox.VerticalScrollBar.Value = 0;
+
+                _zoomFactor = 1.0;
+                ZoomWindow(_zoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -169,14 +194,39 @@ namespace xview
         {
             try
             {
-                _imageBox.SetZoomScale(1.0, new Point(0, 0));
-                _imageBox.HorizontalScrollBar.Value = 0;
-                _imageBox.VerticalScrollBar.Value = 0;
+                //_imageBox.SetZoomScale(1.0, new Point(0, 0));
+                //_imageBox.HorizontalScrollBar.Value = 0;
+                //_imageBox.VerticalScrollBar.Value = 0;
+
+                ZoomWindow(_zoomFactor, true);
             }
             catch (System.Exception ex)
             {
                 logger.Error(ex.Message);
             }
+        }
+
+        private void ZoomWindow(double factor, bool fitScreen = false)
+        {
+            int workAreaWidth = this.ClientRectangle.Width;
+            int workAreaHeight = this.ClientRectangle.Height;
+            Size realSize = _imageBox.Image.Size;
+            if (fitScreen)
+            {
+                double widthFactor = Convert.ToDouble(workAreaWidth) / Convert.ToDouble(realSize.Width);
+                double heightFactor = Convert.ToDouble(workAreaHeight) / Convert.ToDouble(realSize.Height);
+                factor = Math.Min(widthFactor, heightFactor);
+            }
+            else
+            {
+                factor = _funcLimitedZoom(factor);
+            }
+
+            _zoomFactor = factor;
+            _imageBox.Width = Convert.ToInt32(realSize.Width * factor);
+            _imageBox.Height = Convert.ToInt32(realSize.Height * factor);
+            _imageBox.Left = (workAreaWidth > _imageBox.Width) ? (workAreaWidth - _imageBox.Width) / 2 : 0;
+            _imageBox.Top = (workAreaHeight > _imageBox.Height) ? (workAreaHeight - _imageBox.Height) / 2 : 0;
         }
         #endregion
 
@@ -261,6 +311,8 @@ namespace xview
         {
         }
         #endregion
+
+
 
 
 

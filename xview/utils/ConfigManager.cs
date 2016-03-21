@@ -7,6 +7,9 @@ using log4net;
 
 namespace xview.utils
 {
+    /// <summary>
+    /// 程序配置管理器
+    /// </summary>
     public class ConfigManager
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(ConfigManager)); 

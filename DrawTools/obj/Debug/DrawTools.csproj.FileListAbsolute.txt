@@ -1,0 +1,12 @@
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.csprojResolveAssemblyReference.cache
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.DrawArea.resources
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.FrmAbout.resources
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.MainForm.resources
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.PropertiesDialog.resources
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.csproj.GenerateResource.Cache
+E:\work\repository\xview\DrawTools\bin\Debug\DrawTools.dll
+E:\work\repository\xview\DrawTools\bin\Debug\DrawTools.pdb
+E:\work\repository\xview\DrawTools\bin\Debug\DocToolKit.dll
+E:\work\repository\xview\DrawTools\bin\Debug\DocToolKit.pdb
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.dll
+E:\work\repository\xview\DrawTools\obj\Debug\DrawTools.pdb
