@@ -5,10 +5,6 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xview", "xview\xview.csproj", "{95142764-4EA0-4383-A1C8-5809D02AE24D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocToolKit", "DocToolKit\DocToolKit.csproj", "{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawTools", "DrawTools\DrawTools.csproj", "{8D59EEB7-D3A1-4942-9590-823A37391B78}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,26 +27,6 @@ Global
 		{95142764-4EA0-4383-A1C8-5809D02AE24D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{95142764-4EA0-4383-A1C8-5809D02AE24D}.Release|x86.ActiveCfg = Release|x86
 		{95142764-4EA0-4383-A1C8-5809D02AE24D}.Release|x86.Build.0 = Release|x86
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D3D35534-B45E-4ED7-BB97-BFF92FBFE9C6}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8D59EEB7-D3A1-4942-9590-823A37391B78}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

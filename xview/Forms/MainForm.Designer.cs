@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             DevExpress.XtraSplashScreen.SplashScreenManager _splashScreenManager = new DevExpress.XtraSplashScreen.SplashScreenManager(this, typeof(global::xview.Forms.SplashScreen1), true, true);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._barManager = new DevExpress.XtraBars.BarManager(this.components);
             this._toolBarCamera = new DevExpress.XtraBars.Bar();
             this._barButtonItemSelectToolCamera = new DevExpress.XtraBars.BarButtonItem();
@@ -83,6 +83,18 @@
             this._toolBarButtonMinimize = new DevExpress.XtraBars.BarButtonItem();
             this.BarButtonItem_AdvancedSet = new DevExpress.XtraBars.BarButtonItem();
             this._toolBarItemAbout = new DevExpress.XtraBars.BarButtonItem();
+            this._toolBarMeasure = new DevExpress.XtraBars.Bar();
+            this._barButtonSaveDrawObjects = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonLoadDrawObjects = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonDrawSetting = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonSelectAllDrawObjects = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonDeleteDrawObject = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonClearDrawObjects = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonLine = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonRectangle = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonEllipse = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonPolyline = new DevExpress.XtraBars.BarButtonItem();
+            this._barButtonShowMeasurePanel = new DevExpress.XtraBars.BarButtonItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
@@ -90,6 +102,7 @@
             this._barButtonItemCameraSetting = new DevExpress.XtraBars.BarButtonItem();
             this.barEditItem1 = new DevExpress.XtraBars.BarEditItem();
             this.repositoryItemZoomTrackBar2 = new DevExpress.XtraEditors.Repository.RepositoryItemZoomTrackBar();
+            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.repositoryItemTextEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
             this.repositoryItemZoomTrackBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemZoomTrackBar();
             this.repositoryItemTextEdit2 = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
@@ -135,7 +148,8 @@
             this._statusBar,
             this._toolBarImage,
             this._toolBarZoom,
-            this._systemBar});
+            this._systemBar,
+            this._toolBarMeasure});
             this._barManager.DockControls.Add(this.barDockControlTop);
             this._barManager.DockControls.Add(this.barDockControlBottom);
             this._barManager.DockControls.Add(this.barDockControlLeft);
@@ -188,9 +202,21 @@
             this._toolBarButtonMinimize,
             this.BarButtonItem_AdvancedSet,
             this.barEditItem1,
-            this.barCheckItemShowFactorLabel});
+            this.barCheckItemShowFactorLabel,
+            this._barButtonRectangle,
+            this._barButtonLine,
+            this._barButtonEllipse,
+            this.barButtonItem1,
+            this.barButtonPolyline,
+            this._barButtonDeleteDrawObject,
+            this._barButtonClearDrawObjects,
+            this.barButtonSelectAllDrawObjects,
+            this._barButtonSaveDrawObjects,
+            this._barButtonLoadDrawObjects,
+            this._barButtonDrawSetting,
+            this._barButtonShowMeasurePanel});
             this._barManager.MainMenu = this._mainMenuBar;
-            this._barManager.MaxItemId = 65;
+            this._barManager.MaxItemId = 85;
             this._barManager.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemTextEdit1,
             this.repositoryItemZoomTrackBar1,
@@ -564,7 +590,7 @@
             // 
             this._toolBarZoom.BarName = "Custom 6";
             this._toolBarZoom.DockCol = 0;
-            this._toolBarZoom.DockRow = 1;
+            this._toolBarZoom.DockRow = 2;
             this._toolBarZoom.DockStyle = DevExpress.XtraBars.BarDockStyle.Right;
             this._toolBarZoom.FloatLocation = new System.Drawing.Point(390, 686);
             this._toolBarZoom.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] {
@@ -574,7 +600,6 @@
             new DevExpress.XtraBars.LinkPersistInfo(this._barButtonItemFitScreen),
             new DevExpress.XtraBars.LinkPersistInfo(this._barCheckItemSimpleMode, true),
             new DevExpress.XtraBars.LinkPersistInfo(this.barCheckItemShowFactorLabel)});
-            this._toolBarZoom.Offset = 1;
             this._toolBarZoom.OptionsBar.AllowQuickCustomization = false;
             this._toolBarZoom.Text = "比例设置";
             // 
@@ -632,15 +657,15 @@
             // 
             this._systemBar.BarName = "Custom 7";
             this._systemBar.DockCol = 1;
-            this._systemBar.DockRow = 1;
+            this._systemBar.DockRow = 2;
             this._systemBar.DockStyle = DevExpress.XtraBars.BarDockStyle.Right;
-            this._systemBar.FloatLocation = new System.Drawing.Point(1250, 483);
+            this._systemBar.FloatLocation = new System.Drawing.Point(910, 366);
             this._systemBar.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] {
             new DevExpress.XtraBars.LinkPersistInfo(DevExpress.XtraBars.BarLinkUserDefines.PaintStyle, this._toolBarButtonQuit, DevExpress.XtraBars.BarItemPaintStyle.Standard),
             new DevExpress.XtraBars.LinkPersistInfo(this._toolBarButtonMinimize),
             new DevExpress.XtraBars.LinkPersistInfo(this.BarButtonItem_AdvancedSet, true),
             new DevExpress.XtraBars.LinkPersistInfo(this._toolBarItemAbout)});
-            this._systemBar.Offset = 211;
+            this._systemBar.Offset = 243;
             this._systemBar.OptionsBar.AllowQuickCustomization = false;
             this._systemBar.OptionsBar.DisableCustomization = true;
             this._systemBar.Text = "系统";
@@ -677,6 +702,118 @@
             this._toolBarItemAbout.Name = "_toolBarItemAbout";
             this._toolBarItemAbout.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._toolBarItemAbout_ItemClick);
             // 
+            // _toolBarMeasure
+            // 
+            this._toolBarMeasure.BarName = "Custom 8";
+            this._toolBarMeasure.DockCol = 0;
+            this._toolBarMeasure.DockRow = 1;
+            this._toolBarMeasure.DockStyle = DevExpress.XtraBars.BarDockStyle.Right;
+            this._toolBarMeasure.FloatLocation = new System.Drawing.Point(1171, 330);
+            this._toolBarMeasure.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] {
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonSaveDrawObjects),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonLoadDrawObjects),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonDrawSetting),
+            new DevExpress.XtraBars.LinkPersistInfo(this.barButtonSelectAllDrawObjects, true),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonDeleteDrawObject),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonClearDrawObjects),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonLine, true),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonRectangle),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonEllipse),
+            new DevExpress.XtraBars.LinkPersistInfo(this.barButtonPolyline),
+            new DevExpress.XtraBars.LinkPersistInfo(this._barButtonShowMeasurePanel, true)});
+            this._toolBarMeasure.Offset = 1;
+            this._toolBarMeasure.OptionsBar.AllowQuickCustomization = false;
+            this._toolBarMeasure.OptionsBar.DisableCustomization = true;
+            this._toolBarMeasure.Text = "测量";
+            // 
+            // _barButtonSaveDrawObjects
+            // 
+            this._barButtonSaveDrawObjects.Caption = "保存测量图形";
+            this._barButtonSaveDrawObjects.Enabled = false;
+            this._barButtonSaveDrawObjects.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonSaveDrawObjects.Glyph")));
+            this._barButtonSaveDrawObjects.Id = 79;
+            this._barButtonSaveDrawObjects.Name = "_barButtonSaveDrawObjects";
+            // 
+            // _barButtonLoadDrawObjects
+            // 
+            this._barButtonLoadDrawObjects.Caption = "加载测量图形";
+            this._barButtonLoadDrawObjects.Enabled = false;
+            this._barButtonLoadDrawObjects.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonLoadDrawObjects.Glyph")));
+            this._barButtonLoadDrawObjects.Id = 80;
+            this._barButtonLoadDrawObjects.Name = "_barButtonLoadDrawObjects";
+            // 
+            // _barButtonDrawSetting
+            // 
+            this._barButtonDrawSetting.Caption = "测量选项设置";
+            this._barButtonDrawSetting.Enabled = false;
+            this._barButtonDrawSetting.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonDrawSetting.Glyph")));
+            this._barButtonDrawSetting.Id = 81;
+            this._barButtonDrawSetting.Name = "_barButtonDrawSetting";
+            // 
+            // barButtonSelectAllDrawObjects
+            // 
+            this.barButtonSelectAllDrawObjects.Caption = "图形全选";
+            this.barButtonSelectAllDrawObjects.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonSelectAllDrawObjects.Glyph")));
+            this.barButtonSelectAllDrawObjects.Id = 78;
+            this.barButtonSelectAllDrawObjects.Name = "barButtonSelectAllDrawObjects";
+            this.barButtonSelectAllDrawObjects.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonSelectAllDrawObjects_ItemClick);
+            // 
+            // _barButtonDeleteDrawObject
+            // 
+            this._barButtonDeleteDrawObject.Caption = "删除选中图形";
+            this._barButtonDeleteDrawObject.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonDeleteDrawObject.Glyph")));
+            this._barButtonDeleteDrawObject.Id = 76;
+            this._barButtonDeleteDrawObject.Name = "_barButtonDeleteDrawObject";
+            this._barButtonDeleteDrawObject.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonDeleteDrawObject_ItemClick);
+            // 
+            // _barButtonClearDrawObjects
+            // 
+            this._barButtonClearDrawObjects.Caption = "清空所有图形";
+            this._barButtonClearDrawObjects.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonClearDrawObjects.Glyph")));
+            this._barButtonClearDrawObjects.Id = 77;
+            this._barButtonClearDrawObjects.Name = "_barButtonClearDrawObjects";
+            this._barButtonClearDrawObjects.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonClearDrawObjects_ItemClick);
+            // 
+            // _barButtonLine
+            // 
+            this._barButtonLine.Caption = "距离测量工具";
+            this._barButtonLine.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonLine.Glyph")));
+            this._barButtonLine.Id = 66;
+            this._barButtonLine.Name = "_barButtonLine";
+            this._barButtonLine.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonLine_ItemClick);
+            // 
+            // _barButtonRectangle
+            // 
+            this._barButtonRectangle.Caption = "矩形测量工具";
+            this._barButtonRectangle.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonRectangle.Glyph")));
+            this._barButtonRectangle.Id = 65;
+            this._barButtonRectangle.Name = "_barButtonRectangle";
+            this._barButtonRectangle.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonRectangle_ItemClick);
+            // 
+            // _barButtonEllipse
+            // 
+            this._barButtonEllipse.Caption = "椭圆测量工具";
+            this._barButtonEllipse.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonEllipse.Glyph")));
+            this._barButtonEllipse.Id = 72;
+            this._barButtonEllipse.Name = "_barButtonEllipse";
+            this._barButtonEllipse.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonEllipse_ItemClick);
+            // 
+            // barButtonPolyline
+            // 
+            this.barButtonPolyline.Caption = "曲折线测量工具";
+            this.barButtonPolyline.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonPolyline.Glyph")));
+            this.barButtonPolyline.Id = 75;
+            this.barButtonPolyline.Name = "barButtonPolyline";
+            this.barButtonPolyline.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonPolyline_ItemClick);
+            // 
+            // _barButtonShowMeasurePanel
+            // 
+            this._barButtonShowMeasurePanel.Caption = "显示测量面板";
+            this._barButtonShowMeasurePanel.Glyph = ((System.Drawing.Image)(resources.GetObject("_barButtonShowMeasurePanel.Glyph")));
+            this._barButtonShowMeasurePanel.Id = 84;
+            this._barButtonShowMeasurePanel.Name = "_barButtonShowMeasurePanel";
+            this._barButtonShowMeasurePanel.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this._barButtonShowMeasurePanel_ItemClick);
+            // 
             // barDockControlTop
             // 
             this.barDockControlTop.CausesValidation = false;
@@ -702,8 +839,8 @@
             // 
             this.barDockControlRight.CausesValidation = false;
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControlRight.Location = new System.Drawing.Point(934, 24);
-            this.barDockControlRight.Size = new System.Drawing.Size(94, 549);
+            this.barDockControlRight.Location = new System.Drawing.Point(887, 24);
+            this.barDockControlRight.Size = new System.Drawing.Size(141, 549);
             // 
             // _barButtonItemCameraSetting
             // 
@@ -726,6 +863,12 @@
             this.repositoryItemZoomTrackBar2.Middle = 5;
             this.repositoryItemZoomTrackBar2.Name = "repositoryItemZoomTrackBar2";
             this.repositoryItemZoomTrackBar2.ScrollThumbStyle = DevExpress.XtraEditors.Repository.ScrollThumbStyle.ArrowDownRight;
+            // 
+            // barButtonItem1
+            // 
+            this.barButtonItem1.Caption = "曲折线测量工具";
+            this.barButtonItem1.Id = 73;
+            this.barButtonItem1.Name = "barButtonItem1";
             // 
             // repositoryItemTextEdit1
             // 
@@ -1022,6 +1165,19 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemTextEdit repositoryItemTextEdit2;
         private System.Windows.Forms.Label zoomFactorLabel;
         private DevExpress.XtraBars.BarCheckItem barCheckItemShowFactorLabel;
+        private DevExpress.XtraBars.Bar _toolBarMeasure;
+        private DevExpress.XtraBars.BarButtonItem _barButtonRectangle;
+        private DevExpress.XtraBars.BarButtonItem _barButtonLine;
+        private DevExpress.XtraBars.BarButtonItem _barButtonEllipse;
+        private DevExpress.XtraBars.BarButtonItem barButtonPolyline;
+        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
+        private DevExpress.XtraBars.BarButtonItem _barButtonDeleteDrawObject;
+        private DevExpress.XtraBars.BarButtonItem _barButtonClearDrawObjects;
+        private DevExpress.XtraBars.BarButtonItem barButtonSelectAllDrawObjects;
+        private DevExpress.XtraBars.BarButtonItem _barButtonSaveDrawObjects;
+        private DevExpress.XtraBars.BarButtonItem _barButtonLoadDrawObjects;
+        private DevExpress.XtraBars.BarButtonItem _barButtonDrawSetting;
+        private DevExpress.XtraBars.BarButtonItem _barButtonShowMeasurePanel;
     }
 }
 

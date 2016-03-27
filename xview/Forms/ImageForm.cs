@@ -16,6 +16,7 @@ using xview.UserControls;
 using Emgu.CV.UI;
 using System.Runtime.InteropServices;
 using xview.common;
+using DrawTools;
 
 namespace xview
 {
@@ -23,7 +24,7 @@ namespace xview
     /// 图像窗口类
     /// 负责图像的展示和交互
     /// </summary>
-    public partial class ImageForm : Form, xview.common.IZoomable
+    public partial class ImageForm : Form, xview.common.IZoomable, xview.Draw.IDrawForm
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(ImageForm));
 
@@ -38,9 +39,9 @@ namespace xview
         private Image<Gray, Byte>[] originalRGBChannels;
         private ImageProps imageProps = new ImageProps();
 
-        private double _zoomFactor = 1.0;
+        //private double _zoomFactor = 1.0;
 
-        private CustomImageBox _imageBox;
+        private ImageDrawBox _imageBox;
 
         public Image<Bgr, Byte> Image
         {
@@ -57,7 +58,7 @@ namespace xview
             originalImage = img;
             originalRGBChannels = img.Split();//BGR
 
-            _imageBox = new CustomImageBox();
+            _imageBox = new ImageDrawBox();
             _imageBox.init();
             _imageBox.Dock = DockStyle.None;
             this.Controls.Add(_imageBox);
@@ -131,7 +132,9 @@ namespace xview
         public double GetZoomFactor()
         {
             //return _imageBox.ZoomScale;
-            return _zoomFactor;
+            //return _zoomFactor;
+
+            return _imageBox.ZoomFactor;
         }
 
         public void ZoomIn()
@@ -142,8 +145,11 @@ namespace xview
                 //zoomInScale += _zoomStep;
                 //_imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
 
-                _zoomFactor += _zoomStep;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor += _zoomStep;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor += _zoomStep;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -159,8 +165,11 @@ namespace xview
                 //zoomInScale -= _zoomStep;
                 //_imageBox.SetZoomScale(_funcLimitedZoom(zoomInScale), new Point(0, 0));
 
-                _zoomFactor -= _zoomStep;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor -= _zoomStep;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor -= _zoomStep;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -181,8 +190,11 @@ namespace xview
                 //_imageBox.HorizontalScrollBar.Value = 0;
                 //_imageBox.VerticalScrollBar.Value = 0;
 
-                _zoomFactor = 1.0;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor = 1.0;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor = 1.0;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -198,7 +210,7 @@ namespace xview
                 //_imageBox.HorizontalScrollBar.Value = 0;
                 //_imageBox.VerticalScrollBar.Value = 0;
 
-                ZoomWindow(_zoomFactor, true);
+                ZoomWindow(_imageBox.ZoomFactor, true);
             }
             catch (System.Exception ex)
             {
@@ -222,7 +234,8 @@ namespace xview
                 factor = _funcLimitedZoom(factor);
             }
 
-            _zoomFactor = factor;
+            //_zoomFactor = factor;
+            _imageBox.ZoomFactor = factor;
             _imageBox.Width = Convert.ToInt32(realSize.Width * factor);
             _imageBox.Height = Convert.ToInt32(realSize.Height * factor);
             _imageBox.Left = (workAreaWidth > _imageBox.Width) ? (workAreaWidth - _imageBox.Width) / 2 : 0;
@@ -312,9 +325,31 @@ namespace xview
         }
         #endregion
 
+        //measure
+        public void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
+        {
+            _imageBox.ActiveTool = drawToolType;
+        }
 
+        public void DeleteDrawObjects(bool deleteAll)
+        {
+            _imageBox.DeleteDrawObjects(deleteAll);
+        }
 
+        public void SelectAllDrawObjects()
+        {
+            _imageBox.SelectAllDrawObjects();
+        }
 
+        public List<MeasureListItem> GetMeasureListData()
+        {
+            return _imageBox.GetMeasureListData();
+        }
+
+        public List<MeasureStatisticItem> GetMeasureStatisticData()
+        {
+            return _imageBox.GetMeasureStatisticData();
+        }
 
     }
 }

@@ -191,6 +191,38 @@
     <Compile Include="common\IZoomable.cs" />
     <Compile Include="common\SingleDataEventArgs.cs" />
     <Compile Include="common\XTwoExtraValueEventArgs.cs" />
+    <Compile Include="DocManager\DocManager.cs" />
+    <Compile Include="DocManager\DragDropManager.cs" />
+    <Compile Include="DocManager\MruManager.cs" />
+    <Compile Include="DocManager\PersistWindowState.cs" />
+    <Compile Include="Measure\Command.cs" />
+    <Compile Include="Measure\CommandAdd.cs" />
+    <Compile Include="Measure\CommandChangeState.cs" />
+    <Compile Include="Measure\CommandDelete.cs" />
+    <Compile Include="Measure\CommandDeleteAll.cs" />
+    <Compile Include="Measure\DrawEllipse.cs" />
+    <Compile Include="Measure\DrawLine.cs" />
+    <Compile Include="Measure\DrawObject.cs" />
+    <Compile Include="Measure\DrawPolygon.cs" />
+    <Compile Include="Measure\DrawRectangle.cs" />
+    <Compile Include="Measure\GraphicsList.cs" />
+    <Compile Include="Measure\GraphicsProperties.cs" />
+    <Compile Include="Measure\IDrawForm.cs" />
+    <Compile Include="Measure\MeasureListItem.cs" />
+    <Compile Include="Measure\MeasureStatisticItem.cs" />
+    <Compile Include="Measure\MeasureStatisticTypeDef.cs" />
+    <Compile Include="Measure\PropertiesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Measure\PropertiesDialog.Designer.cs" />
+    <Compile Include="Measure\Tool.cs" />
+    <Compile Include="Measure\ToolEllipse.cs" />
+    <Compile Include="Measure\ToolLine.cs" />
+    <Compile Include="Measure\ToolObject.cs" />
+    <Compile Include="Measure\ToolPointer.cs" />
+    <Compile Include="Measure\ToolPolygon.cs" />
+    <Compile Include="Measure\ToolRectangle.cs" />
+    <Compile Include="Measure\UndoManager.cs" />
     <Compile Include="Entity\ImageScale.cs" />
     <Compile Include="Entity\ImageScaleManager.cs" />
     <Compile Include="Entity\XImage.cs" />
@@ -261,10 +293,7 @@
     <Compile Include="UserControls\CapturePara.Designer.cs">
       <DependentUpon>CapturePara.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\CustomImageBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UserControls\CustomPictureBox.cs">
+    <Compile Include="UserControls\ImageDrawBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UserControls\ImagePara.cs">
@@ -278,6 +307,12 @@
     </Compile>
     <Compile Include="UserControls\CameraPara.Designer.cs">
       <DependentUpon>CameraPara.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MeasurePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MeasurePanel.Designer.cs">
+      <DependentUpon>MeasurePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\RWParameter.cs">
       <SubType>UserControl</SubType>
@@ -319,6 +354,7 @@
     <Compile Include="Views\ImageConfigPanelUC.Designer.cs">
       <DependentUpon>ImageConfigPanelUC.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Measure\PropertiesDialog.resx" />
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -365,6 +401,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\CameraPara.resx">
       <DependentUpon>CameraPara.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MeasurePanel.resx">
+      <DependentUpon>MeasurePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\RWParameter.resx">
       <DependentUpon>RWParameter.cs</DependentUpon>
@@ -491,6 +530,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="microscope1.ico" />
+    <Content Include="Resources\Ellipse.cur" />
+    <Content Include="Resources\Line.cur" />
+    <Content Include="Resources\Pencil.cur" />
+    <Content Include="Resources\PolyHandle.cur" />
+    <Content Include="Resources\Rectangle.cur" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

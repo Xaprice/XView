@@ -20,6 +20,8 @@ using System.Runtime.InteropServices;
 using xview.common;
 using xview.Views;
 using xview.utils;
+using DrawTools;
+using xview.Draw;
 
 namespace xview
 {
@@ -33,6 +35,8 @@ namespace xview
         private RWParameter _rwParaUC;
         private ImageConfigPanelUC imageConfig = null;
         private GalleryUC galleryUC = null;
+        private MeasurePanel measureUC = null;
+        //private Form measurePanelContainerForm = null;
 
         private string _selectedCameraName;
         private readonly int _checkCameraInterval = 1000;
@@ -92,6 +96,8 @@ namespace xview
                 _logger.Error(ex.Message);
             }
         }
+
+
 
         public bool PreFilterMessage(ref Message m)
         {
@@ -322,6 +328,7 @@ namespace xview
             try
             {
                 UpdateControls();
+                UpdateMeasureData();
             }
             catch (System.Exception ex)
             {
@@ -363,6 +370,14 @@ namespace xview
             if (selectedPage == null)
                 return null;
             return selectedPage.MdiChild as IZoomable;
+        }
+
+        private IDrawForm GetActiveDrawForm()
+        {
+            XtraMdiTabPage selectedPage = _xtraTabbedMdiManager.SelectedPage;
+            if (selectedPage == null)
+                return null;
+            return selectedPage.MdiChild as IDrawForm;
         }
 
         private PreviewForm GetPreviewChildForm()
@@ -1410,5 +1425,142 @@ namespace xview
                 _logger.Error(ex.Message);
             }
         }
+
+        //mesure
+        private void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    drawForm.SetActiveDrawTool(drawToolType);
+                }
+
+                //Form form = GetActiveChildForm();
+                //if (form != null)
+                //{
+                //    if (form is ImageForm)
+                //    {
+                //        ImageForm imageForm = form as ImageForm;
+                //        imageForm.SetActiveDrawTool(drawToolType);
+                //    }
+                //    else
+                //    {
+                //        PreviewForm previewForm = form as PreviewForm;
+                //        previewForm.SetActiveDrawTool(drawToolType);
+                //    }
+                //}
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void _barButtonLine_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SetActiveDrawTool(ImageDrawBox.DrawToolType.Line);
+        }
+
+        private void _barButtonRectangle_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SetActiveDrawTool(ImageDrawBox.DrawToolType.Rectangle);
+        }
+
+        private void _barButtonEllipse_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SetActiveDrawTool(ImageDrawBox.DrawToolType.Ellipse);
+        }
+
+        private void barButtonPolyline_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SetActiveDrawTool(ImageDrawBox.DrawToolType.Polygon);
+        }
+
+        private void _barButtonDeleteDrawObject_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    //delete selected drawobjects
+                    drawForm.DeleteDrawObjects(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void _barButtonClearDrawObjects_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    //delete all drawobjects
+                    drawForm.DeleteDrawObjects(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void barButtonSelectAllDrawObjects_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    //select all drawobjects
+                    drawForm.SelectAllDrawObjects();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        private void _barButtonShowMeasurePanel_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                measureUC = new MeasurePanel();
+                measureUC.Dock = DockStyle.Fill;
+                UpdateMeasureData();
+                Form measurePanelContainerForm = new Form();
+                measurePanelContainerForm.Text = "测量";
+                measurePanelContainerForm.Controls.Add(measureUC);
+                measurePanelContainerForm.Width = 600;
+                measurePanelContainerForm.Height = 400;
+                measurePanelContainerForm.Show();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 更新当前激活的页面的对应的测量数据
+        /// </summary>
+        private void UpdateMeasureData()
+        {
+            IDrawForm drawForm = GetActiveDrawForm();
+            if (drawForm != null && measureUC!=null)
+            {
+                measureUC.SetMeasureData(drawForm.GetMeasureListData(), drawForm.GetMeasureStatisticData());
+            }
+        }
+
+
     }
 }

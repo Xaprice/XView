@@ -14,10 +14,11 @@ using System.Timers;
 using xview.common;
 using xview.utils;
 using xview.UserControls;
+using DrawTools;
 
 namespace xview.Forms
 {
-    public partial class PreviewForm : Form, xview.common.IZoomable
+    public partial class PreviewForm : Form, xview.common.IZoomable, xview.Draw.IDrawForm
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(PreviewForm));
 
@@ -238,7 +239,7 @@ namespace xview.Forms
 
         #region 构造方法
 
-        private CustomImageBox pictureBox;
+        private ImageDrawBox pictureBox;
 
         //private CustomPictureBox pictureBox;
 
@@ -247,7 +248,7 @@ namespace xview.Forms
             InitializeComponent();
 
             //test code
-            pictureBox = new CustomImageBox();
+            pictureBox = new ImageDrawBox();
             pictureBox.init();
             pictureBox.Dock = DockStyle.None;
             this.Controls.Add(pictureBox);
@@ -958,6 +959,32 @@ namespace xview.Forms
         }
         #endregion
 
+
+        //measure
+        public void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
+        {
+            pictureBox.ActiveTool = drawToolType;
+        }
+
+        public void DeleteDrawObjects(bool deleteAll)
+        {
+            pictureBox.DeleteDrawObjects(deleteAll);
+        }
+
+        public void SelectAllDrawObjects()
+        {
+            pictureBox.SelectAllDrawObjects();
+        }
+
+        public List<MeasureListItem> GetMeasureListData()
+        {
+            return pictureBox.GetMeasureListData();
+        }
+
+        public List<MeasureStatisticItem> GetMeasureStatisticData()
+        {
+            return pictureBox.GetMeasureStatisticData();
+        }
 
     }
 }

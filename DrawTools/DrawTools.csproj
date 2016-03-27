@@ -90,12 +90,6 @@
     <EmbeddedResource Include="MainForm.resx" />
     <EmbeddedResource Include="PropertiesDialog.resx" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DocToolKit\DocToolKit.csproj">
-      <Project>{d3d35534-b45e-4ed7-bb97-bff92fbfe9c6}</Project>
-      <Name>DocToolKit</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
