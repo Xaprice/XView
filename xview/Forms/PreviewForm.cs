@@ -57,11 +57,13 @@ namespace xview.Forms
         private static bool _isCustomDrawing = false;
         private Rectangle _mouseRect = Rectangle.Empty;
 
-        private double _zoomFactor = 1.0;
+        //private double _zoomFactor = 1.0;
         private static readonly double _minZoomScale = 0.1;
         private static readonly double _maxZoomScale = 10.0;
         private static readonly double _zoomStep = 0.05;
         private Func<double, double> _funcLimitedZoom = (x => Math.Max(Math.Min(x, _maxZoomScale), _minZoomScale));
+
+        public MainForm mainForm = null;
 
         /*******************************************************************************
          * 拍照/录像
@@ -175,7 +177,8 @@ namespace xview.Forms
 
                 //test
 
-                if (cam.Init(_cameraCallbackProc, cameraName, pictureBox.Handle))
+                if (cam.Init(_cameraCallbackProc, cameraName, _imageBox.Handle))
+                //if (cam.Init(_cameraCallbackProc, cameraName, _imageBack.Handle))
                 {
                     if (cam.Play())
                     {
@@ -233,13 +236,15 @@ namespace xview.Forms
 
         public Rectangle GetCursorRect()
         {
-            return pictureBox.RectangleToScreen(pictureBox.DisplayRectangle);
+            return _imageBox.RectangleToScreen(_imageBox.DisplayRectangle);
         }
         #endregion
 
         #region 构造方法
 
-        private ImageDrawBox pictureBox;
+        private ImageDrawBox _imageBox;
+
+        private PictureBox _imageBack;
 
         //private CustomPictureBox pictureBox;
 
@@ -248,12 +253,24 @@ namespace xview.Forms
             InitializeComponent();
 
             //test code
-            pictureBox = new ImageDrawBox();
-            pictureBox.init();
-            pictureBox.Dock = DockStyle.None;
-            this.Controls.Add(pictureBox);
+            _imageBox = new ImageDrawBox();
+            _imageBox.DrawForm = this;
+            _imageBox.init();
+            _imageBox.Dock = DockStyle.None;
+            //_imageBox.BackColor = Color.Transparent;
+            this.Controls.Add(_imageBox);
+            
+            //test
+            //_imageBack = new PictureBox();
+            ////_imageBack.init();
+            //_imageBack.Dock = DockStyle.None;
+            //this.Controls.Add(_imageBack);
 
-            PreviewForm.imageBox = pictureBox;
+            //_imageBox.BringToFront();
+
+            //test code-尝试将imageBox设置为_imageBack
+            PreviewForm.imageBox = _imageBox;
+            //PreviewForm.imageBox = _imageBack;
         }
         #endregion
 
@@ -343,7 +360,8 @@ namespace xview.Forms
                 frameHeight = height;
 
                 int stride = width * 3;
-                Image<Bgr, Byte>  _frameImage = new Image<Bgr, Byte>(width, height, stride, (IntPtr)(pBmp24));
+
+                Image<Bgr, Byte>  _frameImage = new Image<Bgr, Byte>(width, height, stride, (IntPtr)(pBmp24));              
                 HandleCapture(_frameImage, pBmp24, ref sFrInfo);
                 MarkFrame(_frameImage);
 
@@ -353,7 +371,7 @@ namespace xview.Forms
                     //test code 原先刷新帧图像的方法
                     //emDSCameraStatus status = XCamera.CameraDisplayRGB24(m_iCam, pBmp24, ref sFrInfo);
                     //尝试新的方法
-                    imageBox.Image = _frameImage;
+                    //imageBox.Image = _frameImage;
                 }
                     
                 return 0;
@@ -540,8 +558,6 @@ namespace xview.Forms
             }
         }
 
-
-
         public static void StartFluCapture()
         {
             _captureState = CaptureState.FLU_START_CAPTURE;
@@ -638,7 +654,9 @@ namespace xview.Forms
         #region 缩放
         public double GetZoomFactor()
         {
-            return _zoomFactor;
+            //return _zoomFactor;
+
+            return _imageBox.ZoomFactor;
         }
 
         /// <summary>
@@ -648,8 +666,11 @@ namespace xview.Forms
         {
             try
             {
-                _zoomFactor += _zoomStep;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor += _zoomStep;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor += _zoomStep;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -664,8 +685,11 @@ namespace xview.Forms
         {
             try
             {
-                _zoomFactor-=_zoomStep;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor-=_zoomStep;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor -= _zoomStep;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -680,8 +704,11 @@ namespace xview.Forms
         {
             try
             {
-                _zoomFactor = 1.0;
-                ZoomWindow(_zoomFactor);
+                //_zoomFactor = 1.0;
+                //ZoomWindow(_zoomFactor);
+
+                _imageBox.ZoomFactor = 1.0;
+                ZoomWindow(_imageBox.ZoomFactor);
             }
             catch (System.Exception ex)
             {
@@ -696,7 +723,8 @@ namespace xview.Forms
         {
             try
             {
-                ZoomWindow(_zoomFactor, true);
+                //ZoomWindow(_zoomFactor, true);
+                ZoomWindow(_imageBox.ZoomFactor, true);
             }
             catch (System.Exception ex)
             {
@@ -724,12 +752,25 @@ namespace xview.Forms
             {
                 factor = _funcLimitedZoom(factor);
             }
-            _zoomFactor = factor;
-            pictureBox.Width = Convert.ToInt32(realSize.Width * factor);
-            pictureBox.Height = Convert.ToInt32(realSize.Height * factor);
-            pictureBox.Left = (workAreaWidth > pictureBox.Width) ? (workAreaWidth - pictureBox.Width) / 2 : 0;
-            pictureBox.Top = (workAreaHeight > pictureBox.Height) ? (workAreaHeight - pictureBox.Height) / 2 : 0;
-            XCamera.GetInstance().SetDisplaySize(pictureBox.Width, pictureBox.Height);
+            //_zoomFactor = factor;
+            _imageBox.ZoomFactor = factor;
+            _imageBox.Width = Convert.ToInt32(realSize.Width * factor);
+            _imageBox.Height = Convert.ToInt32(realSize.Height * factor);
+            _imageBox.Left = (workAreaWidth > _imageBox.Width) ? (workAreaWidth - _imageBox.Width) / 2 : 0;
+            _imageBox.Top = (workAreaHeight > _imageBox.Height) ? (workAreaHeight - _imageBox.Height) / 2 : 0;
+            XCamera.GetInstance().SetDisplaySize(_imageBox.Width, _imageBox.Height);
+
+            SyncImageBack();
+        }
+
+        private void SyncImageBack()
+        {
+            //_imageBack.ZoomFactor = _imageBox.ZoomFactor;
+            _imageBack.Width = _imageBox.Width;
+            _imageBack.Height = _imageBox.Height;
+            _imageBack.Left = _imageBox.Left;
+            _imageBack.Top = _imageBox.Top;
+
         }
 
         //private Size GetPreviewWindowRealSize()
@@ -818,140 +859,143 @@ namespace xview.Forms
             }
         }
 
+        //ROI设置
+
+
         #region 鼠标事件
-        private ToolTip _toolTip = new ToolTip();
-        private Point _startPoint = Point.Empty;
-        private Point _movePoint = Point.Empty;
-        private Point _endPoint = Point.Empty;
-        private bool _isDrawing = false;
+        //private ToolTip _toolTip = new ToolTip();
+        //private Point _startPoint = Point.Empty;
+        //private Point _movePoint = Point.Empty;
+        //private Point _endPoint = Point.Empty;
+       // private bool _isDrawing = false;
 
-        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                if (!IsSettingROI())
-                    return;
-                if (_startPoint != Point.Empty)
-                {
-                    int vScroll = this.VerticalScroll.Value;
-                    int hScroll = this.HorizontalScroll.Value;
-                    double scale = _zoomFactor;
+        //private void pictureBox_MouseUp(object sender, MouseEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (!IsSettingROI())
+        //            return;
+        //        if (_startPoint != Point.Empty)
+        //        {
+        //            int vScroll = this.VerticalScroll.Value;
+        //            int hScroll = this.HorizontalScroll.Value;
+        //            double scale = _zoomFactor;
 
-                    _endPoint = Cursor.Position;
-                    Point loc = new Point(Math.Min(_startPoint.X, _endPoint.X), Math.Min(_startPoint.Y, _endPoint.Y));
-                    Size sz = new Size(Math.Abs(_endPoint.X - _startPoint.X), Math.Abs(_endPoint.Y - _startPoint.Y));
-                    if (_isDrawing)
-                    {
-                        ControlPaint.DrawReversibleFrame(new Rectangle(loc, sz), Color.AntiqueWhite, FrameStyle.Thick);
-                    }
-                    loc.X += hScroll;
-                    loc.Y += vScroll;
-                    loc.X = Convert.ToInt32(loc.X / scale);
-                    loc.Y = Convert.ToInt32(loc.Y / scale);
-                    sz.Width = Convert.ToInt32(sz.Width / scale);
-                    sz.Height = Convert.ToInt32(sz.Height / scale);
+        //            _endPoint = Cursor.Position;
+        //            Point loc = new Point(Math.Min(_startPoint.X, _endPoint.X), Math.Min(_startPoint.Y, _endPoint.Y));
+        //            Size sz = new Size(Math.Abs(_endPoint.X - _startPoint.X), Math.Abs(_endPoint.Y - _startPoint.Y));
+        //            if (_isDrawing)
+        //            {
+        //                ControlPaint.DrawReversibleFrame(new Rectangle(loc, sz), Color.AntiqueWhite, FrameStyle.Thick);
+        //            }
+        //            loc.X += hScroll;
+        //            loc.Y += vScroll;
+        //            loc.X = Convert.ToInt32(loc.X / scale);
+        //            loc.Y = Convert.ToInt32(loc.Y / scale);
+        //            sz.Width = Convert.ToInt32(sz.Width / scale);
+        //            sz.Height = Convert.ToInt32(sz.Height / scale);
 
-                    Rectangle roi0 = pictureBox.RectangleToClient(new Rectangle(loc, sz));
-                    Rectangle roi = ConvertToLeftButtomStartROI(roi0);
+        //            Rectangle roi0 = pictureBox.RectangleToClient(new Rectangle(loc, sz));
+        //            Rectangle roi = ConvertToLeftButtomStartROI(roi0);
 
-                    if (SettingROIType == SettingROI.AE_ROI)
-                    {
-                        //XCamera.GetInstance().SetAeState(false);
-                        System.Threading.Thread.Sleep(20);
-                        if (XCamera.GetInstance().SetAEWindow(roi.X, roi.Y, roi.Width, roi.Height))
-                        {
-                            //bool aeState;
-                            //XCamera.GetInstance().GetAeState(out aeState);
-                            _logger.Debug(string.Format("设置自动曝光窗口成功！roi: X: {0}, Y: {1}, W: {2}, H: {3}, scale: {4}", roi.X, roi.Y, roi.Width, roi.Height, scale));
-                            //_logger.Debug("aeState: " + aeState.ToString());
-                            //XCamera.GetInstance().SetAeState(true);
-                        }
-                    }
-                    else if (SettingROIType == SettingROI.WB_ROI)
-                    {
-                        XCamera.GetInstance().SetWBWindow(roi.X, roi.Y, roi.Width, roi.Height);
-                        XCamera.GetInstance().SetOnceWB();
-                    }
-                    else if (SettingROIType == SettingROI.PVW_ROI)
-                    {
-                        XCamera.GetInstance().SetPreviewROI(roi.X, roi.Y, roi.Width, roi.Height);
-                        XCamera.GetInstance().Play();
-                    }
+        //            if (SettingROIType == SettingROI.AE_ROI)
+        //            {
+        //                //XCamera.GetInstance().SetAeState(false);
+        //                System.Threading.Thread.Sleep(20);
+        //                if (XCamera.GetInstance().SetAEWindow(roi.X, roi.Y, roi.Width, roi.Height))
+        //                {
+        //                    //bool aeState;
+        //                    //XCamera.GetInstance().GetAeState(out aeState);
+        //                    _logger.Debug(string.Format("设置自动曝光窗口成功！roi: X: {0}, Y: {1}, W: {2}, H: {3}, scale: {4}", roi.X, roi.Y, roi.Width, roi.Height, scale));
+        //                    //_logger.Debug("aeState: " + aeState.ToString());
+        //                    //XCamera.GetInstance().SetAeState(true);
+        //                }
+        //            }
+        //            else if (SettingROIType == SettingROI.WB_ROI)
+        //            {
+        //                XCamera.GetInstance().SetWBWindow(roi.X, roi.Y, roi.Width, roi.Height);
+        //                XCamera.GetInstance().SetOnceWB();
+        //            }
+        //            else if (SettingROIType == SettingROI.PVW_ROI)
+        //            {
+        //                XCamera.GetInstance().SetPreviewROI(roi.X, roi.Y, roi.Width, roi.Height);
+        //                XCamera.GetInstance().Play();
+        //            }
 
-                    _isCustomDrawing = false;
-                    _isDrawing = false;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-            finally
-            {
-                Cursor.Clip = Rectangle.Empty;//RectangleToScreen(DisplayRectangle);
-                this.Cursor = Cursors.Default;
-                SettingROIType = SettingROI.NO_ROI;
-            }
-        }
+        //            _isCustomDrawing = false;
+        //            _isDrawing = false;
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        _logger.Error(ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        Cursor.Clip = Rectangle.Empty;//RectangleToScreen(DisplayRectangle);
+        //        this.Cursor = Cursors.Default;
+        //        SettingROIType = SettingROI.NO_ROI;
+        //    }
+        //}
 
-        private Rectangle ConvertToLeftButtomStartROI(Rectangle roi)
-        {
-            Rectangle newRoi =  new Rectangle()
-            {
-                 X=roi.X, Y = (frameHeight-roi.Y-roi.Height), Width = roi.Width, Height=roi.Height
-            };
-            if (newRoi.X < 0)
-                newRoi.X = 0;
-            if (newRoi.Y < 0)
-                newRoi.Y = 0;
-            if(newRoi.X + newRoi.Width > frameWidth)
-            {
-                newRoi.Width = frameWidth - newRoi.X - 1;
-            }
-            if(newRoi.Y + newRoi.Height > frameHeight)
-            {
-                newRoi.Height = frameHeight - newRoi.Y - 1;
-            }
-            return newRoi;
-        }
+        //private Rectangle ConvertToLeftButtomStartROI(Rectangle roi)
+        //{
+        //    Rectangle newRoi =  new Rectangle()
+        //    {
+        //         X=roi.X, Y = (frameHeight-roi.Y-roi.Height), Width = roi.Width, Height=roi.Height
+        //    };
+        //    if (newRoi.X < 0)
+        //        newRoi.X = 0;
+        //    if (newRoi.Y < 0)
+        //        newRoi.Y = 0;
+        //    if(newRoi.X + newRoi.Width > frameWidth)
+        //    {
+        //        newRoi.Width = frameWidth - newRoi.X - 1;
+        //    }
+        //    if(newRoi.Y + newRoi.Height > frameHeight)
+        //    {
+        //        newRoi.Height = frameHeight - newRoi.Y - 1;
+        //    }
+        //    return newRoi;
+        //}
 
-        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                if (IsSettingROI())
-                {
-                    _isCustomDrawing = true;
-                    _isDrawing = true;
-                    _startPoint = Cursor.Position;
-                    _mouseRect = new Rectangle(_startPoint.X, _startPoint.Y, 0, 0);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
+        //private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (IsSettingROI())
+        //        {
+        //            _isCustomDrawing = true;
+        //            _isDrawing = true;
+        //            _startPoint = Cursor.Position;
+        //            _mouseRect = new Rectangle(_startPoint.X, _startPoint.Y, 0, 0);
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        _logger.Error(ex.Message);
+        //    }
+        //}
 
-        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                if (IsSettingROI() && _isDrawing)
-                {
-                    ControlPaint.DrawReversibleFrame(_mouseRect, Color.AntiqueWhite, FrameStyle.Thick);
-                    _movePoint = Cursor.Position;
-                    Point loc = new Point(Math.Min(_startPoint.X, _movePoint.X), Math.Min(_startPoint.Y, _movePoint.Y));
-                    Size sz = new Size(Math.Abs(_movePoint.X - _startPoint.X), Math.Abs(_movePoint.Y - _startPoint.Y));
-                    _mouseRect = new Rectangle(loc, sz);
-                    ControlPaint.DrawReversibleFrame(_mouseRect, Color.AntiqueWhite, FrameStyle.Thick);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
+        //private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (IsSettingROI() && _isDrawing)
+        //        {
+        //            ControlPaint.DrawReversibleFrame(_mouseRect, Color.AntiqueWhite, FrameStyle.Thick);
+        //            _movePoint = Cursor.Position;
+        //            Point loc = new Point(Math.Min(_startPoint.X, _movePoint.X), Math.Min(_startPoint.Y, _movePoint.Y));
+        //            Size sz = new Size(Math.Abs(_movePoint.X - _startPoint.X), Math.Abs(_movePoint.Y - _startPoint.Y));
+        //            _mouseRect = new Rectangle(loc, sz);
+        //            ControlPaint.DrawReversibleFrame(_mouseRect, Color.AntiqueWhite, FrameStyle.Thick);
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        _logger.Error(ex.Message);
+        //    }
+        //}
 
         private bool IsSettingROI()
         {
@@ -961,29 +1005,43 @@ namespace xview.Forms
 
 
         //measure
+
+        public void SetDrawingMode(xview.UserControls.ImageDrawBox.DrawingMode drawingMode)
+        {
+            _imageBox.DrawMode = drawingMode;
+        }
+
         public void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
         {
-            pictureBox.ActiveTool = drawToolType;
+            _imageBox.ActiveTool = drawToolType;
         }
 
         public void DeleteDrawObjects(bool deleteAll)
         {
-            pictureBox.DeleteDrawObjects(deleteAll);
+            _imageBox.DeleteDrawObjects(deleteAll);
         }
 
         public void SelectAllDrawObjects()
         {
-            pictureBox.SelectAllDrawObjects();
+            _imageBox.SelectAllDrawObjects();
         }
 
         public List<MeasureListItem> GetMeasureListData()
         {
-            return pictureBox.GetMeasureListData();
+            return _imageBox.GetMeasureListData();
         }
 
         public List<MeasureStatisticItem> GetMeasureStatisticData()
         {
-            return pictureBox.GetMeasureStatisticData();
+            return _imageBox.GetMeasureStatisticData();
+        }
+
+        public void SetUnit(double pixelsPerUm)
+        {
+            if (mainForm != null)
+            {
+                mainForm.UpdatePixelsPerUm(pixelsPerUm);
+            }
         }
 
     }

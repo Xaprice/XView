@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using xview.UserControls;
+using xview.Forms;
 
 
 namespace DrawTools
@@ -41,9 +42,38 @@ namespace DrawTools
             drawArea.AddCommandToHistory(new CommandAdd(drawArea.GraphicsList[0]));
             drawArea.ActiveTool = ImageDrawBox.DrawToolType.Pointer;
 
+            //zhoujin: 如果是正在定标则删除图形，并弹出定标窗口
+            if (drawArea.DrawMode == ImageDrawBox.DrawingMode.SetUnit)
+            {
+                DrawObject drawObj = drawArea.GraphicsList[0];
+                if (drawObj is DrawLine)
+                {
+                    DrawLine drawLine = drawObj as DrawLine;
+                    double pxLen = CalcLenght(drawLine.StartPoint, drawLine.EndPoint);
+
+                    SetUnitForm setUnitForm = new SetUnitForm(pxLen, drawArea);
+                    setUnitForm.ShowDialog();
+
+                    drawArea.GraphicsList.DeleteLastAddedObject();
+                }
+                else
+                {
+
+                }
+            }
+
             drawArea.Capture = false;
             drawArea.Refresh();
             drawArea.GraphicsList.Dirty = true;
+        }
+
+        private double CalcLenght(Point p1, Point p2)
+        {
+            double length = 0;
+            double w = Math.Abs(p1.X - p2.X);
+            double h = Math.Abs(p1.Y - p1.Y);
+            length = Math.Sqrt(w * w + h * w);
+            return length;
         }
 
         /// <summary>

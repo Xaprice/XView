@@ -43,6 +43,8 @@ namespace xview
 
         private ImageDrawBox _imageBox;
 
+        public MainForm mainForm = null;
+
         public Image<Bgr, Byte> Image
         {
             get { return _imageBox.Image as Image<Bgr, Byte>; }
@@ -59,6 +61,7 @@ namespace xview
             originalRGBChannels = img.Split();//BGR
 
             _imageBox = new ImageDrawBox();
+            _imageBox.DrawForm = this;
             _imageBox.init();
             _imageBox.Dock = DockStyle.None;
             this.Controls.Add(_imageBox);
@@ -326,6 +329,11 @@ namespace xview
         #endregion
 
         //measure
+        public void SetDrawingMode(xview.UserControls.ImageDrawBox.DrawingMode drawingMode)
+        {
+            _imageBox.DrawMode = drawingMode;
+        }
+
         public void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
         {
             _imageBox.ActiveTool = drawToolType;
@@ -349,6 +357,14 @@ namespace xview
         public List<MeasureStatisticItem> GetMeasureStatisticData()
         {
             return _imageBox.GetMeasureStatisticData();
+        }
+
+        public void SetUnit(double pixelsPerUm)
+        {
+            if (mainForm != null)
+            {
+                mainForm.UpdatePixelsPerUm(pixelsPerUm);
+            }
         }
 
     }

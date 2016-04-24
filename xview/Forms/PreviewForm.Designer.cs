@@ -28,22 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox_ = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox_
-            // 
-            this.pictureBox_.Location = new System.Drawing.Point(69, 58);
-            this.pictureBox_.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBox_.Name = "pictureBox_";
-            this.pictureBox_.Size = new System.Drawing.Size(372, 306);
-            this.pictureBox_.TabIndex = 0;
-            this.pictureBox_.TabStop = false;
-            this.pictureBox_.Visible = false;
-            this.pictureBox_.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
-            this.pictureBox_.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
-            this.pictureBox_.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
             // 
             // PreviewForm
             // 
@@ -51,19 +36,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1016, 700);
-            this.Controls.Add(this.pictureBox_);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "PreviewForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PreviewForm_FormClosing);
             this.Load += new System.EventHandler(this.PreviewForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox_;
+
     }
 }

@@ -41,6 +41,16 @@ namespace xview
         private string _selectedCameraName;
         private readonly int _checkCameraInterval = 1000;
 
+        //1微米的像素数
+        public double pixelsPerUm = 0;
+
+        public void UpdatePixelsPerUm(double pxPerUm)
+        {
+            this.unitLabel.BringToFront();
+            this.pixelsPerUm = pxPerUm;
+            this.unitLabel.Text = String.Format("1um({0}px)", pxPerUm);
+        }
+
         #region 窗体函数
         public MainForm()
         {
@@ -60,6 +70,9 @@ namespace xview
 
 	            if (this != null && IsHandleCreated)
                 {
+                    this.zoomFactorLabel.BringToFront();
+                    this.unitLabel.BringToFront();
+
                     PreviewForm.VideoCaptureStartedEvent += new PreviewForm.VideoCaptureStartedHandler(_childForm_VideoCaptureStarted);
                     PreviewForm.VideoCaptureStoppedEvent += new PreviewForm.VideoCaptureStoppedHandler(_childForm_VideoCaptureStopped);
 
@@ -695,6 +708,8 @@ namespace xview
             newPage.Width = this.Width - (dockPanel.Width+ 126);
             newPage.Height = this.Height - 8;
 
+            newPage.mainForm = this;
+
             newPage.Text = _selectedCameraName;
             newPage.CameraClosed += new PreviewForm.CameraClosedHandler(OnCameraClosed);
             newPage.CameraOpened += new PreviewForm.CameraOpenedHandler(OnCameraOpened);
@@ -859,6 +874,7 @@ namespace xview
                 if (string.IsNullOrEmpty(title))
                     title = "图像";
                 ImageForm newPage = new ImageForm(title, fileName, img);
+                newPage.mainForm = this;
                 newPage.Width = this.Width - (dockPanel.Width + 126);
                 newPage.Height = this.Height - 8;
                 newPage.MdiParent = this;
@@ -1146,6 +1162,8 @@ namespace xview
                 IZoomable zoomable = GetActiveZoomableForm();
                 UpdateZoomFactorLabel(zoomable.GetZoomFactor());
                 this.zoomFactorLabel.Visible = true;
+                this.zoomFactorLabel.BringToFront();
+                this.unitLabel.BringToFront();
                 //SetDockPanelVisibility(childForm.IsPreviewMode);
                 //缩放工具栏
                 _barButtonItemZoomIn.Enabled = true;
@@ -1427,6 +1445,28 @@ namespace xview
         }
 
         //mesure
+        private void barBtnSetUnit_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SetDrawingMode(ImageDrawBox.DrawingMode.SetUnit);
+            SetActiveDrawTool(ImageDrawBox.DrawToolType.Line);
+        }
+
+        private void SetDrawingMode(xview.UserControls.ImageDrawBox.DrawingMode drawMode)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    drawForm.SetDrawingMode(drawMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+        }
+
         private void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
         {
             try
@@ -1436,21 +1476,6 @@ namespace xview
                 {
                     drawForm.SetActiveDrawTool(drawToolType);
                 }
-
-                //Form form = GetActiveChildForm();
-                //if (form != null)
-                //{
-                //    if (form is ImageForm)
-                //    {
-                //        ImageForm imageForm = form as ImageForm;
-                //        imageForm.SetActiveDrawTool(drawToolType);
-                //    }
-                //    else
-                //    {
-                //        PreviewForm previewForm = form as PreviewForm;
-                //        previewForm.SetActiveDrawTool(drawToolType);
-                //    }
-                //}
             }
             catch (Exception ex)
             {
@@ -1560,6 +1585,8 @@ namespace xview
                 measureUC.SetMeasureData(drawForm.GetMeasureListData(), drawForm.GetMeasureStatisticData());
             }
         }
+
+
 
 
     }

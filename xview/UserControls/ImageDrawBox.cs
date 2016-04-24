@@ -15,6 +15,13 @@ namespace xview.UserControls
 {
     public class ImageDrawBox : ImageBox, DocumentDirtyObserver
     {
+        public enum DrawingMode
+        {
+            Measure,//测量
+            SetUnit,//设置单位(定标)
+            SetROI//设置ROI
+        }
+
         public enum DrawToolType
         {
             Pointer,
@@ -44,6 +51,8 @@ namespace xview.UserControls
 
         public Form Owner { get; set; }
 
+        public IDrawForm DrawForm { get; set; }
+
         public DrawToolType ActiveTool { get; set; }
 
         public GraphicsList GraphicsList
@@ -65,13 +74,20 @@ namespace xview.UserControls
 
         public double ZoomFactor { get; set; }
 
+        private DrawingMode drawingMode = DrawingMode.Measure;
+        public DrawingMode DrawMode
+        {
+            get{return drawingMode;}
+            set{drawingMode = value;}
+        }
+
         //--------------init
         public void init()
         {
             //set modes
             this.FunctionalMode = FunctionalModeOption.Minimum;
             this.PanableAndZoomable = false;
-            this.DoubleBuffered = true;
+            //this.DoubleBuffered = true;
             this.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 
             ActiveTool = DrawToolType.Pointer;
@@ -151,7 +167,7 @@ namespace xview.UserControls
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
+                logger.Error(ex.Message+ex.StackTrace);
             }
         }
 
@@ -402,7 +418,13 @@ namespace xview.UserControls
                 list.Add(ellipsePerimeterItem);
             }
             return list;
-        } 
+        }
+
+        public void SetUnit(double pxPerUm)
+        {
+            if(DrawForm != null)
+                DrawForm.SetUnit(pxPerUm);
+        }
 
         
 

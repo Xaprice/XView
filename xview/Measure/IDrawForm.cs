@@ -19,5 +19,9 @@ namespace xview.Draw
 
         List<MeasureStatisticItem> GetMeasureStatisticData();
 
+        void SetDrawingMode(xview.UserControls.ImageDrawBox.DrawingMode drawingMode);
+
+        void SetUnit(double pixelsPerUm);
+
     }
 }

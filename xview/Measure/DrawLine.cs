@@ -321,6 +321,10 @@ namespace DrawTools
             return item;
         }
 
+        public Point StartPoint { get { return startPoint; } }
+
+        public Point EndPoint { get { return endPoint; } }
+
        
     }
 }
