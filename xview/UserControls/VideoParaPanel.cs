@@ -10,12 +10,17 @@ using log4net;
 
 namespace xview.UserControls
 {
-    public partial class ImagePara : UserControl
+    /// <summary>
+    /// 视频参数设置面板
+    /// </summary>
+    public partial class VideoParaPanel : UserControl
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(ImagePara));
-        private bool _isInit = false;
+        private static readonly ILog logger = LogManager.GetLogger(typeof(VideoParaPanel));
 
-        public ImagePara()
+        //是否正在进行初始化的标识
+        private bool isInit = false;
+
+        public VideoParaPanel()
         {
             InitializeComponent();
         }
@@ -24,7 +29,6 @@ namespace xview.UserControls
         {
         }
 
-        #region 消息
         public delegate void SetWBWindowEventHandler(object sender, EventArgs e);
         public event SetWBWindowEventHandler SetWBWindow;
         protected virtual void OnSetWBWindow(EventArgs e)
@@ -34,14 +38,12 @@ namespace xview.UserControls
                 SetWBWindow(this, e);
             }
         }
-        #endregion
 
-        #region 初始化、更新界面控件
         public void Init()
         {
             try
             {
-                _isInit = true;
+                isInit = true;
                 tDSCameraCapability capbility;
                 if (XCamera.GetInstance().GetCapability(out capbility))
                 {
@@ -53,11 +55,11 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
             finally
             {
-                _isInit = false;
+                isInit = false;
             }
         }
 
@@ -129,7 +131,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -155,7 +157,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -176,7 +178,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -201,12 +203,11 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
-        #endregion
 
-        #region RGB通道
+        /***********************************RGB设置************************************/
         private void _trackBarRGain_Scroll(object sender, EventArgs e)
         {
             SetGain();
@@ -226,7 +227,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
                     float rGain = Convert.ToSingle(_trackBarRGain.Value) / 100;
                     float gGain = Convert.ToSingle(_trackBarGGain.Value) / 100;
@@ -237,44 +238,16 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
-
-        private void _btnOnceWB_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (XCamera.GetInstance().SetOnceWB())
-                {
-                    this.Init();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
-
-        private void _btnSetWBWindow_Click(object sender, EventArgs e)
-        {
-            try
-            {
-	            OnSetWBWindow(new EventArgs());
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
-        }
-        #endregion
 
         #region 伽马、对比对、饱和度
         private void _trackBarGamma_Scroll(object sender, EventArgs e)
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
 	            {
 		            byte gamma = Convert.ToByte(_trackBarGamma.Value);
 		            XCamera.GetInstance().SetGamma(gamma);
@@ -283,7 +256,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -291,7 +264,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                byte contrast = Convert.ToByte(_trackBarContrast.Value);
 	                XCamera.GetInstance().SetContrast(contrast);
@@ -300,7 +273,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -308,7 +281,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                byte saturation = Convert.ToByte(_trackBarSaturation.Value);
 	                XCamera.GetInstance().SetSaturation(saturation);
@@ -317,7 +290,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -325,7 +298,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                if (XCamera.GetInstance().SetColorEnhancement(_checkEnableColorEnhance.Checked))
 	                {
@@ -335,7 +308,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -345,7 +318,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                byte edgeGain = Convert.ToByte(_trackBarSharpness.Value);
 	                XCamera.GetInstance().SetEdgeGain(edgeGain);
@@ -354,7 +327,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -362,7 +335,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                XCamera.GetInstance().SetNoiseReductionGain(_trackBarAntiNoise.Value);
 	                UpdateLabels();
@@ -370,7 +343,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -378,7 +351,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
                     XCamera.GetInstance().Set3DNoiseReductionGain(_trackBar3DAntiNoise.Value);
                     UpdateLabels();
@@ -386,7 +359,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -394,7 +367,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
                     if (XCamera.GetInstance().SetEdgeEnhancement(_checkEnableSharp.Checked))
                     {
@@ -404,7 +377,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -412,7 +385,7 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                if (XCamera.GetInstance().SetNoiseReductionState(_checkEnableAntiNoise.Checked))
 	                {
@@ -422,7 +395,7 @@ namespace xview.UserControls
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -437,24 +410,52 @@ namespace xview.UserControls
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
+
+        /***********************************白平衡************************************/
+        private void _btnOnceWB_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (XCamera.GetInstance().SetOnceWB())
+                {
+                    this.Init();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+        }
+
+        private void _btnSetWBWindow_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OnSetWBWindow(new EventArgs());
+            }
+            catch (System.Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+        }
 
         #region 镜像、单色、反色
         private void _checkHMirror_CheckedChanged(object sender, EventArgs e)
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
             	{
 	            	XCamera.GetInstance().SetHorizontalMirrorState(_checkHMirror.Checked);
             	}
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -462,14 +463,14 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                XCamera.GetInstance().SetVerticalMirrorState(_checkVMirror.Checked);
                 }
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -477,14 +478,14 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                XCamera.GetInstance().SetMonochromeState(_checkMono.Checked);
                 }
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -492,21 +493,17 @@ namespace xview.UserControls
         {
             try
             {
-                if (!_isInit)
+                if (!isInit)
                 {
 	                XCamera.GetInstance().SetInverseState(_checkInverse.Checked);
                 }
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
-
-
-
-
 
 
     }

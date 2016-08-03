@@ -40,7 +40,6 @@ namespace xview.Views
                 this.ButtonEdit_VideoPath.Text = ConfigManager.GetAppConfig(workPathVideo);
                 this.ButtonEdit_ConfigPath.Text = ConfigManager.GetAppConfig(workPathConfig);
 
-
 // 	            this.ButtonEdit_ImagePath.EditValueChanged += new EventHandler(WorkPathEditValueChanged);
 // 	            this.ButtonEdit_VideoPath.EditValueChanged += new EventHandler(WorkPathEditValueChanged);
 // 	            this.ButtonEdit_ConfigPath.EditValueChanged += new EventHandler(WorkPathEditValueChanged);

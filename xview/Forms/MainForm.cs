@@ -22,21 +22,28 @@ using xview.Views;
 using xview.utils;
 using DrawTools;
 using xview.Draw;
+using System.Xml;
+using xview.Measure;
 
 namespace xview
 {
     public partial class MainForm : Form, IMessageFilter
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(MainForm));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MainForm));
 
-        private CameraPara _camParaUC;
-        private CapturePara _captureParaUC;
-        private ImagePara _imageParaUC;
-        private RWParameter _rwParaUC;
-        private ImageConfigPanelUC imageConfig = null;
+        /********************************控制面板*********************************/
+        //TODO:此处面板可以按照展示顺序排列
+        //相机控制面板
+        private CameraParaPanel cameraParaPanel;//相机参数面板（设置曝光、ROI等）
+        private CaptureParaPanel captureParaPanel;//采集设置面板（设置截图、录像等）
+        private VideoParaPanel videoParaPanel;//相机视频画面参数设置面板（颜色增益、白平衡等）
+        private CameraSettingPanel cameraSettingPanel;//相机参数设置面板（存取内部参数，配置文件相关）
+        //图像控制面板
+        private ImageParaPanel imageParaPanel = null;//图像画面设置面板（设置颜色偏移等）
+        //其他面板
         private GalleryUC galleryUC = null;
         private MeasurePanel measureUC = null;
-        //private Form measurePanelContainerForm = null;
+
 
         private string _selectedCameraName;
         private readonly int _checkCameraInterval = 1000;
@@ -44,11 +51,17 @@ namespace xview
         //1微米的像素数
         public double pixelsPerUm = 0;
 
-        public void UpdatePixelsPerUm(double pxPerUm)
+        //public void UpdatePixelsPerUm(double pxPerUm)
+        //{
+        //    this.scaleLabel.BringToFront();
+        //    this.pixelsPerUm = pxPerUm;
+        //    this.scaleLabel.Text = String.Format("1um({0}px)", pxPerUm);
+        //}
+
+        //TODO: 状态显示控件需要提取出专门的类来管理
+        public void UpdateScaleLabel(string scaleLabel)
         {
-            this.unitLabel.BringToFront();
-            this.pixelsPerUm = pxPerUm;
-            this.unitLabel.Text = String.Format("1um({0}px)", pxPerUm);
+            this.scaleLabel.Text = scaleLabel;
         }
 
         #region 窗体函数
@@ -71,7 +84,7 @@ namespace xview
 	            if (this != null && IsHandleCreated)
                 {
                     this.zoomFactorLabel.BringToFront();
-                    this.unitLabel.BringToFront();
+                    this.scaleLabel.BringToFront();
 
                     PreviewForm.VideoCaptureStartedEvent += new PreviewForm.VideoCaptureStartedHandler(_childForm_VideoCaptureStarted);
                     PreviewForm.VideoCaptureStoppedEvent += new PreviewForm.VideoCaptureStoppedHandler(_childForm_VideoCaptureStopped);
@@ -83,11 +96,12 @@ namespace xview
                     InitCameraPanels();
                     SetDockPanelVisibility(true);
 
-                    //图像模式面板
-                    imageConfig = new ImageConfigPanelUC();
-                    imageConfig.Dock = DockStyle.Fill;
-                    imageConfig.SetImagePara += imageConfig_SetImagePara;
-                    tabImageSet.Controls.Add(imageConfig);
+                    //该页面即将被删除
+                    ////图像模式面板
+                    //imageConfig = new ImageConfigPanelUC();
+                    //imageConfig.Dock = DockStyle.Fill;
+                    //imageConfig.SetImagePara += imageConfig_SetImagePara;
+                    //tabImageSet.Controls.Add(imageConfig);
 
                     galleryUC = new GalleryUC();
                     galleryUC.Dock = DockStyle.Fill;
@@ -106,7 +120,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -130,15 +144,15 @@ namespace xview
             return false;
         }
 
-        void imageConfig_SetImagePara(object sender, SingleDataEventArgs<ImageConfigPara> e)
-        {
-            Form form = GetActiveChildForm();
-            if(form is ImageForm)
-            {
-                ImageForm imgForm = form as ImageForm;
-                imgForm.SetImageProps(e.Data);
-            }
-        }
+        //void imageConfig_SetImagePara(object sender, SingleDataEventArgs<ImageChangePara> e)
+        //{
+        //    Form form = GetActiveChildForm();
+        //    if(form is ImageForm)
+        //    {
+        //        ImageForm imgForm = form as ImageForm;
+        //        imgForm.SetImageProps(e.Data);
+        //    }
+        //}
 
         private void galleryUC_OpenImage(object sender, string fullName)
         {
@@ -162,7 +176,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
                 return false;
             }
         }
@@ -190,10 +204,21 @@ namespace xview
 	            {
 	                Directory.CreateDirectory(ProgramConstants.DEFAULT_INI_PATH);
 	            }
+                if (!File.Exists(ProgramConstants.DEFAULT_PROGRAM_CONFIG_FILE_PATH))
+                {
+                    XmlDocument doc = new XmlDocument();
+                    XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+                    doc.AppendChild(dec);
+                    XmlElement root = doc.CreateElement("Configuration");
+                    doc.AppendChild(root);
+                    XmlNode scaleNode = doc.CreateElement("Scales");
+                    root.AppendChild(scaleNode);
+                    doc.Save(ProgramConstants.DEFAULT_PROGRAM_CONFIG_FILE_PATH);
+                }
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -203,31 +228,34 @@ namespace xview
         private void InitCameraPanels()
         {
             //“相机”停靠面板
-            _camParaUC = new CameraPara();
-            _camParaUC.Enabled = false;
-            _camParaUC.Dock = DockStyle.Fill;
-            tabCameraPara.Controls.Add(_camParaUC);
-            _camParaUC.SetAEROI += new CameraPara.SetAEROIEventHandler(_camParaUC_SetAEROI);
-            _camParaUC.SetPreviewROI += new CameraPara.SetPreviewROIEventHandler(_camParaUC_SetPreviewROI);
-            _camParaUC.SwitchPreviewResolution += new CameraPara.SwitchPreviewResolutionHandler(_camParaUC_SwitchPreviewResolution);
+            cameraParaPanel = new CameraParaPanel();
+            cameraParaPanel.Enabled = false;
+            cameraParaPanel.Dock = DockStyle.Fill;
+            tabCameraPara.Controls.Add(cameraParaPanel);
+            cameraParaPanel.SetAEROI += new CameraParaPanel.SetAEROIEventHandler(_camParaUC_SetAEROI);
+            cameraParaPanel.SetPreviewROI += new CameraParaPanel.SetPreviewROIEventHandler(_camParaUC_SetPreviewROI);
+            cameraParaPanel.SwitchPreviewResolution += new CameraParaPanel.SwitchPreviewResolutionHandler(_camParaUC_SwitchPreviewResolution);
             //“采集”停靠面板
-            _captureParaUC = new CapturePara();
-            _captureParaUC.Enabled = false;
-            _captureParaUC.Dock = DockStyle.Fill;
-            tabCapturePara.Controls.Add(_captureParaUC);
+            captureParaPanel = new CaptureParaPanel();
+            captureParaPanel.Enabled = false;
+            captureParaPanel.Dock = DockStyle.Fill;
+            tabCapturePara.Controls.Add(captureParaPanel);
             //“图像”停靠面板（预览）
-            _imageParaUC = new ImagePara();
-            _imageParaUC.Enabled = false;
-            _imageParaUC.Dock = DockStyle.Fill;
-            _imageParaUC.SetWBWindow += new ImagePara.SetWBWindowEventHandler(_imageParaUC_SetWBWindow);
-            tabVideoPara.Controls.Add(_imageParaUC);
+            videoParaPanel = new VideoParaPanel();
+            videoParaPanel.Enabled = false;
+            videoParaPanel.Dock = DockStyle.Fill;
+            videoParaPanel.SetWBWindow += new VideoParaPanel.SetWBWindowEventHandler(_imageParaUC_SetWBWindow);
+            tabVideoPara.Controls.Add(videoParaPanel);
             //“参数”停靠面板
-            _rwParaUC = new RWParameter();
-            _rwParaUC.Enabled = false;
-            _rwParaUC.Dock = DockStyle.Fill;
-            tabSavePara.Controls.Add(_rwParaUC);
+            cameraSettingPanel = new CameraSettingPanel();
+            cameraSettingPanel.Enabled = false;
+            cameraSettingPanel.Dock = DockStyle.Fill;
+            tabSavePara.Controls.Add(cameraSettingPanel);
 
-            
+            //图像停靠面板
+            imageParaPanel = new ImageParaPanel();
+            imageParaPanel.Dock = DockStyle.Fill;
+            tabImageSet2.Controls.Add(imageParaPanel);
         }
 
         public void PreviewForm_ImageSavedEvent(XTwoExtraValueEventArgs<string, string> e)
@@ -239,7 +267,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -283,7 +311,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -298,7 +326,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -332,7 +360,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -345,7 +373,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -357,7 +385,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -372,7 +400,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error("获取当前激活子页面时发生异常" + ex.Message);
+                logger.Error("获取当前激活子页面时发生异常" + ex.Message);
                 return null;
             }
         }
@@ -408,7 +436,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error("获取预览子页面时发生异常" + ex.Message);
+                logger.Error("获取预览子页面时发生异常" + ex.Message);
                 return null;
             }
         }
@@ -429,7 +457,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -446,7 +474,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -473,7 +501,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -490,7 +518,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -507,7 +535,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -520,7 +548,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         
@@ -533,7 +561,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -545,7 +573,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -557,7 +585,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -601,7 +629,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -613,7 +641,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -653,7 +681,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -678,7 +706,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
                 return false;
             }
         }
@@ -742,7 +770,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -759,7 +787,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -775,7 +803,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -791,7 +819,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -807,7 +835,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -884,7 +912,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
                 XMessageDialog.Error("打开图片失败！");
             }
         }
@@ -900,7 +928,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
                 title = "";
             }
             return title;
@@ -923,7 +951,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -939,7 +967,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -955,7 +983,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -970,7 +998,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -985,7 +1013,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -995,17 +1023,20 @@ namespace xview
         {
             try
             {
-                PreviewForm previewForm = GetPreviewChildForm();
-	            if (previewForm != null)
-	            {
-                    previewForm.SettingROIType = SettingROI.AE_ROI;
-                    previewForm.Cursor = Cursors.Cross;
-                    Cursor.Clip = previewForm.GetCursorRect();
-	            }
+                //PreviewForm previewForm = GetPreviewChildForm();
+                //if (previewForm != null)
+                //{
+                //    previewForm.SettingROIType = SettingROI.AE_ROI;
+                //    previewForm.Cursor = Cursors.Cross;
+                //    Cursor.Clip = previewForm.GetCursorRect();
+                //}
+                SetDrawingMode(ImageDrawBox.DrawingMode.SetROI);
+                SetActiveDrawTool(ImageDrawBox.DrawToolType.Rectangle);
+                SetROIType(ImageDrawBox.ROIType.AEROI);
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1013,17 +1044,20 @@ namespace xview
         {
             try
             {
-                PreviewForm previewForm = GetPreviewChildForm();
-                if (previewForm != null)
-                {
-                    previewForm.SettingROIType = SettingROI.PVW_ROI;
-                    previewForm.Cursor = Cursors.Cross;
-                    Cursor.Clip = previewForm.GetCursorRect();
-                }
+                //PreviewForm previewForm = GetPreviewChildForm();
+                //if (previewForm != null)
+                //{
+                //    previewForm.SettingROIType = SettingROI.PVW_ROI;
+                //    previewForm.Cursor = Cursors.Cross;
+                //    Cursor.Clip = previewForm.GetCursorRect();
+                //}
+                SetDrawingMode(ImageDrawBox.DrawingMode.SetROI);
+                SetActiveDrawTool(ImageDrawBox.DrawToolType.Rectangle);
+                SetROIType(ImageDrawBox.ROIType.PVW_ROI);
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1040,47 +1074,29 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
+        //设置白平衡
         private void _imageParaUC_SetWBWindow(object sender, EventArgs e)
         {
             try
             {
-                //ChildForm activeForm = GetActiveChildForm();
-                //if (activeForm != null && !activeForm.IsPreviewMode)
+                SetDrawingMode(ImageDrawBox.DrawingMode.SetROI);
+                SetActiveDrawTool(ImageDrawBox.DrawToolType.Rectangle);
+                SetROIType(ImageDrawBox.ROIType.WB_ROI);
+                //PreviewForm previewForm = GetPreviewChildForm();
+                //if (previewForm != null)
                 //{
-                //    SetROIForm setROIForm = new SetROIForm();
-                //    setROIForm.FormTitle = "白平衡窗口设置：";
-                //    setROIForm.Image = activeForm.Image;
-                //    if (setROIForm.ShowDialog() == DialogResult.OK)
-                //    {
-                //        Rectangle roi = setROIForm.ROI;
-                //        if (XCamera.GetInstance().SetWBWindow(roi.X, roi.Y, roi.Width, roi.Height))
-                //        {
-                //            XMessageDialog.Info("设置白平衡窗口成功！");
-                //        }
-                //    }
+                //    previewForm.SettingROIType = SettingROI.WB_ROI;
+                //    previewForm.Cursor = Cursors.Cross;
+                //    Cursor.Clip = previewForm.GetCursorRect();
                 //}
-                try
-                {
-                    PreviewForm previewForm = GetPreviewChildForm();
-                    if (previewForm != null)
-                    {
-                        previewForm.SettingROIType = SettingROI.WB_ROI;
-                        previewForm.Cursor = Cursors.Cross;
-                        Cursor.Clip = previewForm.GetCursorRect();
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    _logger.Error(ex.Message);
-                }
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1089,10 +1105,10 @@ namespace xview
             try
             {
 	            //SetCameraPanelEnableState(true);
-	            _camParaUC.Init();
-	            _imageParaUC.Init();
-	            _captureParaUC.Init();
-	            _rwParaUC.Init();
+	            cameraParaPanel.Init();
+	            videoParaPanel.Init();
+	            captureParaPanel.Init();
+	            cameraSettingPanel.Init();
 
                 UpdateControls();
 
@@ -1102,7 +1118,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1118,7 +1134,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1132,7 +1148,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1146,7 +1162,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
         #endregion
@@ -1157,13 +1173,29 @@ namespace xview
         private void UpdateControls()
         {
             Form childForm = GetActiveChildForm();
+            //TODO:整个这部分需要重构
+            if (childForm is ImageForm)
+            {
+                this.imageParaPanel.SetActiveImageForm(childForm as ImageForm);
+            }
             if (childForm != null)
             {
                 IZoomable zoomable = GetActiveZoomableForm();
                 UpdateZoomFactorLabel(zoomable.GetZoomFactor());
                 this.zoomFactorLabel.Visible = true;
                 this.zoomFactorLabel.BringToFront();
-                this.unitLabel.BringToFront();
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    MeasureScale scale = drawForm.GetScale();
+                    if (scale != null)
+                        UpdateScaleLabel(scale.ToString());
+                    else
+                        UpdateScaleLabel("未定标");
+                    this.scaleLabel.Visible = true;
+                    this.scaleLabel.BringToFront();
+                }
+
                 //SetDockPanelVisibility(childForm.IsPreviewMode);
                 //缩放工具栏
                 _barButtonItemZoomIn.Enabled = true;
@@ -1255,6 +1287,7 @@ namespace xview
             else//无激活窗口
             {
                 this.zoomFactorLabel.Visible = false;
+                this.scaleLabel.Visible = false;
                 SetDockPanelVisibility(true);
                 if (!string.IsNullOrEmpty(_selectedCameraName))
                 {
@@ -1306,20 +1339,21 @@ namespace xview
             //tabImageSet.PageVisible = !isPreviewMode;
             tabImageSet.PageVisible = false; //未完成，暂时先隐藏
             tabGally.PageVisible = true;
+            tabImageSet2.PageVisible = !isPreviewMode;
         }
 
         public void SetCameraPanelEnableState(bool state)
         {
             try
             {
-                _camParaUC.Enabled = state;
-                _captureParaUC.Enabled = state;
-                _imageParaUC.Enabled = state;
-                _rwParaUC.Enabled = state;
+                cameraParaPanel.Enabled = state;
+                captureParaPanel.Enabled = state;
+                videoParaPanel.Enabled = state;
+                cameraSettingPanel.Enabled = state;
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1342,7 +1376,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1356,7 +1390,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1368,7 +1402,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1412,7 +1446,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1428,7 +1462,7 @@ namespace xview
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1440,15 +1474,37 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
         //mesure
-        private void barBtnSetUnit_ItemClick(object sender, ItemClickEventArgs e)
+        /// <summary>
+        /// 通过直接在图像上绘制添加标尺
+        /// </summary>
+        private void barBtnAddScale_ItemClick(object sender, ItemClickEventArgs e)
         {
             SetDrawingMode(ImageDrawBox.DrawingMode.SetUnit);
             SetActiveDrawTool(ImageDrawBox.DrawToolType.Line);
+        }
+
+        /// <summary>
+        /// 从已经设置的标尺中选择标尺
+        /// </summary>
+        private void barBtnSetUnit_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    drawForm.ShowSetScaleForm();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
         }
 
         private void SetDrawingMode(xview.UserControls.ImageDrawBox.DrawingMode drawMode)
@@ -1463,7 +1519,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1479,7 +1535,23 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
+            }
+        }
+
+        private void SetROIType(ImageDrawBox.ROIType roiType)
+        {
+            try
+            {
+                IDrawForm drawForm = GetActiveDrawForm();
+                if (drawForm != null)
+                {
+                    drawForm.SetROIType(roiType);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
             }
         }
 
@@ -1516,7 +1588,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1533,7 +1605,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1550,7 +1622,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1570,7 +1642,7 @@ namespace xview
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -1585,6 +1657,8 @@ namespace xview
                 measureUC.SetMeasureData(drawForm.GetMeasureListData(), drawForm.GetMeasureStatisticData());
             }
         }
+
+
 
 
 

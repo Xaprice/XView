@@ -17,6 +17,7 @@ using Emgu.CV.UI;
 using System.Runtime.InteropServices;
 using xview.common;
 using DrawTools;
+using xview.Measure;
 
 namespace xview
 {
@@ -37,7 +38,7 @@ namespace xview
 
         private Image<Bgr, Byte> originalImage;
         private Image<Gray, Byte>[] originalRGBChannels;
-        private ImageProps imageProps = new ImageProps();
+        //private ImageProps imageProps = new ImageProps();
 
         //private double _zoomFactor = 1.0;
 
@@ -81,18 +82,20 @@ namespace xview
 
         }
 
-        public void SetImageProps(ImageConfigPara para)
+        public void SetImageProps(ImagePropType type, double value)
         {
             try
             {
-                if (para.IsColorChannel())
+                if (type==ImagePropType.RED_CHANNEL||type==ImagePropType.GREEN_CHANNEL
+                    ||type==ImagePropType.BLUE_CHANNEL)//设置颜色通道
                 {
-                    SetColorChannelProp(para);
+                    ShiftColorChannel(type, value);
                 }
-                else if(para.IsGamma())
+                else if (type == ImagePropType.GAMMA)
                 {
 
                 }
+                
             }
            catch (System.Exception ex)
             {
@@ -100,36 +103,50 @@ namespace xview
             }
         }
 
-        private void SetColorChannelProp(ImageConfigPara para)
+        //设置图像通道的偏移量
+        private void ShiftColorChannel(ImagePropType type, double value)
         {
+            if (value == 0)
+                return;
             Image<Bgr, Byte> newImg = this.Image.Clone();
             Image<Gray, Byte>[] splitedImgsNew = newImg.Split(); //BGR
 
-            if (para.Type == ImagePropTypeDef.BLUE_CHANNEL)
+            if (type == ImagePropType.BLUE_CHANNEL)
             {
-                splitedImgsNew[0] = originalRGBChannels[0].Mul(para.Value);
+                //splitedImgsNew[0] = originalRGBChannels[0].Mul(para.Value);
+                splitedImgsNew[0] = originalRGBChannels[0].Add(new Gray(value));
             }
-            else if (para.Type == ImagePropTypeDef.GREEN_CHANNEL)
+            else if (type == ImagePropType.GREEN_CHANNEL)
             {
-                splitedImgsNew[1] = originalRGBChannels[1].Mul(para.Value);
+                //splitedImgsNew[1] = originalRGBChannels[1].Mul(para.Value);
+                splitedImgsNew[1] = originalRGBChannels[1].Add(new Gray(value));
             }
-            else if (para.Type == ImagePropTypeDef.RED_CHANNEL)
+            else if (type == ImagePropType.RED_CHANNEL)
             {
-                splitedImgsNew[2] = originalRGBChannels[2].Mul(para.Value);
+                //splitedImgsNew[2] = originalRGBChannels[2].Mul(para.Value);
+                splitedImgsNew[2] = originalRGBChannels[2].Add(new Gray(value));
             }
             else
             {
-                logger.Error("not color channel prop");
+                logger.Error("color channel not defined!");
                 return;
             }
             CvInvoke.cvMerge(splitedImgsNew[0].Ptr, splitedImgsNew[1].Ptr, splitedImgsNew[2].Ptr, IntPtr.Zero, newImg.Ptr);
             _imageBox.Image = newImg;
         }
 
-        private void SetGammaProp(ImageConfigPara para)
+        /// <summary>
+        /// 还原图像
+        /// </summary>
+        public void RestoreImage()
         {
-
+            _imageBox.Image = originalImage.Clone();
         }
+
+        //private void SetGammaProp(ImageChangePara para)
+        //{
+
+        //}
 
         #region 缩放
         public double GetZoomFactor()
@@ -266,7 +283,7 @@ namespace xview
             try
             {
 	            BackUpImage();
-	            XHistogramPanel histogramPanel = new XHistogramPanel();
+	            HistogramPanel histogramPanel = new HistogramPanel();
 	            histogramPanel.ImageForm = this;
 	            histogramPanel.Init(_imageBox.Image as Image<Bgr, Byte>);
 	            Form form = new Form();
@@ -351,20 +368,37 @@ namespace xview
 
         public List<MeasureListItem> GetMeasureListData()
         {
-            return _imageBox.GetMeasureListData();
+            return _imageBox.GetMeasureListData(this.measureScale);
         }
 
         public List<MeasureStatisticItem> GetMeasureStatisticData()
         {
-            return _imageBox.GetMeasureStatisticData();
+            return _imageBox.GetMeasureStatisticData(this.measureScale);
         }
 
-        public void SetUnit(double pixelsPerUm)
+        private MeasureScale measureScale = null;
+        public void SetScale(MeasureScale scale)
         {
+            this.measureScale = scale;
             if (mainForm != null)
             {
-                mainForm.UpdatePixelsPerUm(pixelsPerUm);
+                mainForm.UpdateScaleLabel(scale.ToString());
             }
+        }
+
+        public void SetROIType(ImageDrawBox.ROIType roiType)
+        {
+            _imageBox.SetROIType = roiType;
+        }
+
+        public void ShowSetScaleForm()
+        {
+            _imageBox.ShowSetScaleForm();
+        }
+
+        public MeasureScale GetScale()
+        {
+            return measureScale;
         }
 
     }

@@ -96,6 +96,7 @@
             this.barButtonPolyline = new DevExpress.XtraBars.BarButtonItem();
             this._barButtonShowMeasurePanel = new DevExpress.XtraBars.BarButtonItem();
             this.barBtnSetUnit = new DevExpress.XtraBars.BarButtonItem();
+            this.barBtnAddScale = new DevExpress.XtraBars.BarButtonItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
@@ -123,7 +124,8 @@
             this._xtraTabbedMdiManager = new DevExpress.XtraTabbedMdi.XtraTabbedMdiManager(this.components);
             this._timer4CheckCamera = new System.Windows.Forms.Timer(this.components);
             this.zoomFactorLabel = new System.Windows.Forms.Label();
-            this.unitLabel = new System.Windows.Forms.Label();
+            this.scaleLabel = new System.Windows.Forms.Label();
+            this.tabImageSet2 = new DevExpress.XtraTab.XtraTabPage();
             ((System.ComponentModel.ISupportInitialize)(this._barManager)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemZoomTrackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemTextEdit1)).BeginInit();
@@ -217,9 +219,10 @@
             this._barButtonLoadDrawObjects,
             this._barButtonDrawSetting,
             this._barButtonShowMeasurePanel,
-            this.barBtnSetUnit});
+            this.barBtnSetUnit,
+            this.barBtnAddScale});
             this._barManager.MainMenu = this._mainMenuBar;
-            this._barManager.MaxItemId = 87;
+            this._barManager.MaxItemId = 88;
             this._barManager.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemTextEdit1,
             this.repositoryItemZoomTrackBar1,
@@ -724,7 +727,8 @@
             new DevExpress.XtraBars.LinkPersistInfo(this._barButtonEllipse),
             new DevExpress.XtraBars.LinkPersistInfo(this.barButtonPolyline),
             new DevExpress.XtraBars.LinkPersistInfo(this._barButtonShowMeasurePanel, true),
-            new DevExpress.XtraBars.LinkPersistInfo(this.barBtnSetUnit)});
+            new DevExpress.XtraBars.LinkPersistInfo(this.barBtnSetUnit),
+            new DevExpress.XtraBars.LinkPersistInfo(this.barBtnAddScale)});
             this._toolBarMeasure.Offset = 1;
             this._toolBarMeasure.OptionsBar.AllowQuickCustomization = false;
             this._toolBarMeasure.OptionsBar.DisableCustomization = true;
@@ -825,6 +829,14 @@
             this.barBtnSetUnit.Id = 86;
             this.barBtnSetUnit.Name = "barBtnSetUnit";
             this.barBtnSetUnit.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barBtnSetUnit_ItemClick);
+            // 
+            // barBtnAddScale
+            // 
+            this.barBtnAddScale.Caption = "添加标尺";
+            this.barBtnAddScale.Glyph = ((System.Drawing.Image)(resources.GetObject("barBtnAddScale.Glyph")));
+            this.barBtnAddScale.Id = 87;
+            this.barBtnAddScale.Name = "barBtnAddScale";
+            this.barBtnAddScale.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barBtnAddScale_ItemClick);
             // 
             // barDockControlTop
             // 
@@ -960,7 +972,8 @@
             this.tabCapturePara,
             this.tabSavePara,
             this.tabImageSet,
-            this.tabGally});
+            this.tabGally,
+            this.tabImageSet2});
             // 
             // tabVideoPara
             // 
@@ -1056,24 +1069,31 @@
             this.zoomFactorLabel.Text = "50%";
             this.zoomFactorLabel.Visible = false;
             // 
-            // unitLabel
+            // scaleLabel
             // 
-            this.unitLabel.AutoSize = true;
-            this.unitLabel.BackColor = System.Drawing.Color.Transparent;
-            this.unitLabel.Font = new System.Drawing.Font("黑体", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.unitLabel.ForeColor = System.Drawing.Color.Cyan;
-            this.unitLabel.Location = new System.Drawing.Point(330, 41);
-            this.unitLabel.Name = "unitLabel";
-            this.unitLabel.Size = new System.Drawing.Size(85, 24);
-            this.unitLabel.TabIndex = 12;
-            this.unitLabel.Text = "未定标";
+            this.scaleLabel.AutoSize = true;
+            this.scaleLabel.BackColor = System.Drawing.Color.Transparent;
+            this.scaleLabel.Font = new System.Drawing.Font("黑体", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.scaleLabel.ForeColor = System.Drawing.Color.Cyan;
+            this.scaleLabel.Location = new System.Drawing.Point(330, 41);
+            this.scaleLabel.Name = "scaleLabel";
+            this.scaleLabel.Size = new System.Drawing.Size(85, 24);
+            this.scaleLabel.TabIndex = 12;
+            this.scaleLabel.Text = "未定标";
+            this.scaleLabel.Visible = false;
+            // 
+            // tabImageSet2
+            // 
+            this.tabImageSet2.Name = "tabImageSet2";
+            this.tabImageSet2.Size = new System.Drawing.Size(222, 677);
+            this.tabImageSet2.Text = "图像2";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 788);
-            this.Controls.Add(this.unitLabel);
+            this.Controls.Add(this.scaleLabel);
             this.Controls.Add(this.zoomFactorLabel);
             this.Controls.Add(this.dockPanel);
             this.Controls.Add(this.barDockControlLeft);
@@ -1204,7 +1224,9 @@
         private DevExpress.XtraBars.BarButtonItem _barButtonDrawSetting;
         private DevExpress.XtraBars.BarButtonItem _barButtonShowMeasurePanel;
         private DevExpress.XtraBars.BarButtonItem barBtnSetUnit;
-        private System.Windows.Forms.Label unitLabel;
+        private System.Windows.Forms.Label scaleLabel;
+        private DevExpress.XtraBars.BarButtonItem barBtnAddScale;
+        private DevExpress.XtraTab.XtraTabPage tabImageSet2;
     }
 }
 

@@ -10,9 +10,9 @@ using log4net;
 
 namespace xview.UserControls
 {
-    public partial class CameraPara : UserControl
+    public partial class CameraParaPanel : UserControl
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(CameraPara));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CameraParaPanel));
         private static readonly ulong msPerHour = 3600000;
         private static readonly ulong msPerMin = 60000;
         private static readonly ulong msPerSec = 1000;
@@ -58,9 +58,11 @@ namespace xview.UserControls
         /********************************************************************************
         * 构造与初始化
         ********************************************************************************/
-        public CameraPara()
+        public CameraParaPanel()
         {
             InitializeComponent();
+            //TODO: 该功能暂时不可用，将该功能按钮隐藏
+            this.layoutControlItem15.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
         }
 
         public void Init()
@@ -103,6 +105,7 @@ namespace xview.UserControls
                 _comboBoxEditAEMode.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
                 _comboBoxEditAEMode.SelectedIndexChanged += _comboBoxEditAEMode_SelectedIndexChanged;
               
+
             }
             catch (System.Exception ex)
             {

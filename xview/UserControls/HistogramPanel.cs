@@ -13,9 +13,9 @@ using log4net;
 
 namespace xview.UserControls
 {
-    public partial class XHistogramPanel : UserControl
+    public partial class HistogramPanel : UserControl
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(XHistogramPanel));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(HistogramPanel));
 
         private static readonly int _bins = 255;
         private List<SeriesPoint> _leftBoundLineSeriesPts = new List<SeriesPoint>();
@@ -27,7 +27,7 @@ namespace xview.UserControls
 
         public ImageForm ImageForm { get; set; }
 
-        public XHistogramPanel()
+        public HistogramPanel()
         {
             InitializeComponent();
         }

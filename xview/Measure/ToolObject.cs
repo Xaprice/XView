@@ -42,23 +42,32 @@ namespace DrawTools
             drawArea.AddCommandToHistory(new CommandAdd(drawArea.GraphicsList[0]));
             drawArea.ActiveTool = ImageDrawBox.DrawToolType.Pointer;
 
+            //TODO : 这部分代码需要整理
             //zhoujin: 如果是正在定标则删除图形，并弹出定标窗口
             if (drawArea.DrawMode == ImageDrawBox.DrawingMode.SetUnit)
             {
                 DrawObject drawObj = drawArea.GraphicsList[0];
+                //定标只支持用画直线的方式
                 if (drawObj is DrawLine)
                 {
                     DrawLine drawLine = drawObj as DrawLine;
                     double pxLen = CalcLenght(drawLine.StartPoint, drawLine.EndPoint);
-
-                    SetUnitForm setUnitForm = new SetUnitForm(pxLen, drawArea);
+                    SetUnitForm setUnitForm = new SetUnitForm(drawArea, pxLen);
                     setUnitForm.ShowDialog();
-
                     drawArea.GraphicsList.DeleteLastAddedObject();
+                    drawArea.DrawMode = ImageDrawBox.DrawingMode.Measure;
                 }
-                else
+            }
+            if (drawArea.DrawMode == ImageDrawBox.DrawingMode.SetROI)
+            {
+                DrawObject drawObj = drawArea.GraphicsList[0];
+                //设置ROI只支持用矩形绘制
+                if (drawObj is DrawRectangle)
                 {
-
+                    DrawRectangle drawRect = drawObj as DrawRectangle;
+                    drawArea.SetROI(drawRect.GetBoundingBox());
+                    drawArea.GraphicsList.DeleteLastAddedObject();
+                    drawArea.DrawMode = ImageDrawBox.DrawingMode.Measure;
                 }
             }
 

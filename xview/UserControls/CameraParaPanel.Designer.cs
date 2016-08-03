@@ -1,6 +1,6 @@
 ﻿namespace xview.UserControls
 {
-    partial class CameraPara
+    partial class CameraParaPanel
     {
         /// <summary> 
         /// 必需的设计器变量。
@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
+            this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
+            this._comboBoxEditAEMode = new DevExpress.XtraEditors.ComboBoxEdit();
             this._checkBoxEnableAE = new System.Windows.Forms.CheckBox();
             this.comboBoxEditCaptureRes = new DevExpress.XtraEditors.ComboBoxEdit();
             this._comboBoxEditResolution = new DevExpress.XtraEditors.ComboBoxEdit();
@@ -66,6 +68,9 @@
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.emptySpaceItem12 = new DevExpress.XtraLayout.EmptySpaceItem();
+            this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem17 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem6 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.layoutControlGroup4 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem12 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -77,13 +82,9 @@
             this.layoutControlItem15 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem18 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem9 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.emptySpaceItem12 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this._comboBoxEditAEMode = new DevExpress.XtraEditors.ComboBoxEdit();
-            this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
-            this.layoutControlItem17 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditAEMode.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.comboBoxEditCaptureRes.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditResolution.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._radioGroupFrameSpeed.Properties)).BeginInit();
@@ -115,6 +116,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem17)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem12)).BeginInit();
@@ -126,10 +130,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem15)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem18)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem12)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditAEMode.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem17)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -161,6 +161,30 @@
             this.layoutControl1.Size = new System.Drawing.Size(220, 585);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
+            // 
+            // labelControl2
+            // 
+            this.labelControl2.Location = new System.Drawing.Point(14, 60);
+            this.labelControl2.Name = "labelControl2";
+            this.labelControl2.Size = new System.Drawing.Size(60, 14);
+            this.labelControl2.StyleController = this.layoutControl1;
+            this.labelControl2.TabIndex = 28;
+            this.labelControl2.Text = "自动模式：";
+            // 
+            // _comboBoxEditAEMode
+            // 
+            this._comboBoxEditAEMode.EditValue = "自动调节增益和时间";
+            this._comboBoxEditAEMode.Location = new System.Drawing.Point(88, 60);
+            this._comboBoxEditAEMode.Name = "_comboBoxEditAEMode";
+            this._comboBoxEditAEMode.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this._comboBoxEditAEMode.Properties.Items.AddRange(new object[] {
+            "自动调节增益和时间",
+            "自动调节时间",
+            "自动调节增益"});
+            this._comboBoxEditAEMode.Size = new System.Drawing.Size(118, 20);
+            this._comboBoxEditAEMode.StyleController = this.layoutControl1;
+            this._comboBoxEditAEMode.TabIndex = 27;
             // 
             // _checkBoxEnableAE
             // 
@@ -687,6 +711,40 @@
             this.layoutControlItem1.TextToControlDistance = 0;
             this.layoutControlItem1.TextVisible = false;
             // 
+            // emptySpaceItem12
+            // 
+            this.emptySpaceItem12.AllowHotTrack = false;
+            this.emptySpaceItem12.CustomizationFormText = "emptySpaceItem12";
+            this.emptySpaceItem12.Location = new System.Drawing.Point(64, 26);
+            this.emptySpaceItem12.Name = "emptySpaceItem12";
+            this.emptySpaceItem12.Size = new System.Drawing.Size(10, 24);
+            this.emptySpaceItem12.Text = "emptySpaceItem12";
+            this.emptySpaceItem12.TextSize = new System.Drawing.Size(0, 0);
+            // 
+            // layoutControlItem16
+            // 
+            this.layoutControlItem16.Control = this._comboBoxEditAEMode;
+            this.layoutControlItem16.CustomizationFormText = "layoutControlItem16";
+            this.layoutControlItem16.Location = new System.Drawing.Point(74, 26);
+            this.layoutControlItem16.Name = "layoutControlItem16";
+            this.layoutControlItem16.Size = new System.Drawing.Size(122, 24);
+            this.layoutControlItem16.Text = "layoutControlItem16";
+            this.layoutControlItem16.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem16.TextToControlDistance = 0;
+            this.layoutControlItem16.TextVisible = false;
+            // 
+            // layoutControlItem17
+            // 
+            this.layoutControlItem17.Control = this.labelControl2;
+            this.layoutControlItem17.CustomizationFormText = "layoutControlItem17";
+            this.layoutControlItem17.Location = new System.Drawing.Point(0, 26);
+            this.layoutControlItem17.Name = "layoutControlItem17";
+            this.layoutControlItem17.Size = new System.Drawing.Size(64, 24);
+            this.layoutControlItem17.Text = "layoutControlItem17";
+            this.layoutControlItem17.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem17.TextToControlDistance = 0;
+            this.layoutControlItem17.TextVisible = false;
+            // 
             // emptySpaceItem6
             // 
             this.emptySpaceItem6.AllowHotTrack = false;
@@ -817,64 +875,6 @@
             this.emptySpaceItem9.Text = "emptySpaceItem9";
             this.emptySpaceItem9.TextSize = new System.Drawing.Size(0, 0);
             // 
-            // emptySpaceItem12
-            // 
-            this.emptySpaceItem12.AllowHotTrack = false;
-            this.emptySpaceItem12.CustomizationFormText = "emptySpaceItem12";
-            this.emptySpaceItem12.Location = new System.Drawing.Point(64, 26);
-            this.emptySpaceItem12.Name = "emptySpaceItem12";
-            this.emptySpaceItem12.Size = new System.Drawing.Size(10, 24);
-            this.emptySpaceItem12.Text = "emptySpaceItem12";
-            this.emptySpaceItem12.TextSize = new System.Drawing.Size(0, 0);
-            // 
-            // _comboBoxEditAEMode
-            // 
-            this._comboBoxEditAEMode.EditValue = "自动调节增益和时间";
-            this._comboBoxEditAEMode.Location = new System.Drawing.Point(88, 60);
-            this._comboBoxEditAEMode.Name = "_comboBoxEditAEMode";
-            this._comboBoxEditAEMode.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this._comboBoxEditAEMode.Properties.Items.AddRange(new object[] {
-            "自动调节增益和时间",
-            "自动调节时间",
-            "自动调节增益"});
-            this._comboBoxEditAEMode.Size = new System.Drawing.Size(118, 20);
-            this._comboBoxEditAEMode.StyleController = this.layoutControl1;
-            this._comboBoxEditAEMode.TabIndex = 27;
-            // 
-            // layoutControlItem16
-            // 
-            this.layoutControlItem16.Control = this._comboBoxEditAEMode;
-            this.layoutControlItem16.CustomizationFormText = "layoutControlItem16";
-            this.layoutControlItem16.Location = new System.Drawing.Point(74, 26);
-            this.layoutControlItem16.Name = "layoutControlItem16";
-            this.layoutControlItem16.Size = new System.Drawing.Size(122, 24);
-            this.layoutControlItem16.Text = "layoutControlItem16";
-            this.layoutControlItem16.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem16.TextToControlDistance = 0;
-            this.layoutControlItem16.TextVisible = false;
-            // 
-            // labelControl2
-            // 
-            this.labelControl2.Location = new System.Drawing.Point(14, 60);
-            this.labelControl2.Name = "labelControl2";
-            this.labelControl2.Size = new System.Drawing.Size(60, 14);
-            this.labelControl2.StyleController = this.layoutControl1;
-            this.labelControl2.TabIndex = 28;
-            this.labelControl2.Text = "自动模式：";
-            // 
-            // layoutControlItem17
-            // 
-            this.layoutControlItem17.Control = this.labelControl2;
-            this.layoutControlItem17.CustomizationFormText = "layoutControlItem17";
-            this.layoutControlItem17.Location = new System.Drawing.Point(0, 26);
-            this.layoutControlItem17.Name = "layoutControlItem17";
-            this.layoutControlItem17.Size = new System.Drawing.Size(64, 24);
-            this.layoutControlItem17.Text = "layoutControlItem17";
-            this.layoutControlItem17.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem17.TextToControlDistance = 0;
-            this.layoutControlItem17.TextVisible = false;
-            // 
             // CameraPara
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -885,6 +885,7 @@
             this.Size = new System.Drawing.Size(220, 585);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditAEMode.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.comboBoxEditCaptureRes.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditResolution.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._radioGroupFrameSpeed.Properties)).EndInit();
@@ -916,6 +917,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem17)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem12)).EndInit();
@@ -927,10 +931,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem15)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem18)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem12)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._comboBoxEditAEMode.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem17)).EndInit();
             this.ResumeLayout(false);
 
         }

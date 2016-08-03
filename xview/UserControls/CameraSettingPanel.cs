@@ -10,11 +10,14 @@ using log4net;
 
 namespace xview.UserControls
 {
-    public partial class RWParameter : UserControl
+    /// <summary>
+    /// 相机参数设置面板
+    /// </summary>
+    public partial class CameraSettingPanel : UserControl
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RWParameter));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(CameraSettingPanel));
 
-        public RWParameter()
+        public CameraSettingPanel()
         {
             InitializeComponent();
         }

@@ -187,7 +187,6 @@
   <ItemGroup>
     <Compile Include="common\ImageChannelDefine.cs" />
     <Compile Include="common\ImageProps.cs" />
-    <Compile Include="common\ImagePropTypeDef.cs" />
     <Compile Include="common\IZoomable.cs" />
     <Compile Include="common\SingleDataEventArgs.cs" />
     <Compile Include="common\XTwoExtraValueEventArgs.cs" />
@@ -216,6 +215,7 @@
     <Compile Include="Measure\GraphicsProperties.cs" />
     <Compile Include="Measure\IDrawForm.cs" />
     <Compile Include="Measure\MeasureListItem.cs" />
+    <Compile Include="Measure\MeasureScale.cs" />
     <Compile Include="Measure\MeasureStatisticItem.cs" />
     <Compile Include="Measure\MeasureStatisticTypeDef.cs" />
     <Compile Include="Measure\PropertiesDialog.cs">
@@ -294,26 +294,32 @@
     </Compile>
     <Compile Include="Camera\XCamera.cs" />
     <Compile Include="Camera\XCameraDefine.cs" />
-    <Compile Include="UserControls\CapturePara.cs">
+    <Compile Include="UserControls\CaptureParaPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\CapturePara.Designer.cs">
-      <DependentUpon>CapturePara.cs</DependentUpon>
+    <Compile Include="UserControls\CaptureParaPanel.Designer.cs">
+      <DependentUpon>CaptureParaPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\ImageDrawBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UserControls\ImagePara.cs">
+    <Compile Include="UserControls\VideoParaPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\ImagePara.Designer.cs">
-      <DependentUpon>ImagePara.cs</DependentUpon>
+    <Compile Include="UserControls\VideoParaPanel.Designer.cs">
+      <DependentUpon>VideoParaPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\CameraPara.cs">
+    <Compile Include="UserControls\CameraParaPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\CameraPara.Designer.cs">
-      <DependentUpon>CameraPara.cs</DependentUpon>
+    <Compile Include="UserControls\CameraParaPanel.Designer.cs">
+      <DependentUpon>CameraParaPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ImageParaPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ImageParaPanel.Designer.cs">
+      <DependentUpon>ImageParaPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MeasurePanel.cs">
       <SubType>UserControl</SubType>
@@ -321,11 +327,11 @@
     <Compile Include="UserControls\MeasurePanel.Designer.cs">
       <DependentUpon>MeasurePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\RWParameter.cs">
+    <Compile Include="UserControls\CameraSettingPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\RWParameter.Designer.cs">
-      <DependentUpon>RWParameter.cs</DependentUpon>
+    <Compile Include="UserControls\CameraSettingPanel.Designer.cs">
+      <DependentUpon>CameraSettingPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\WaitForm.cs">
       <SubType>Form</SubType>
@@ -333,14 +339,19 @@
     <Compile Include="Forms\WaitForm.Designer.cs">
       <DependentUpon>WaitForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\XHistogramPanel.cs">
+    <Compile Include="UserControls\HistogramPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\XHistogramPanel.Designer.cs">
-      <DependentUpon>XHistogramPanel.cs</DependentUpon>
+    <Compile Include="UserControls\HistogramPanel.Designer.cs">
+      <DependentUpon>HistogramPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TrackBarPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\TrackBarPanel.Designer.cs">
+      <DependentUpon>TrackBarPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="utils\ConfigManager.cs" />
-    <Compile Include="utils\LogUtil.cs" />
     <Compile Include="utils\WMMSGHelper.cs" />
     <Compile Include="utils\XMessageDialog.cs" />
     <Compile Include="Views\AdvancedSettingForm.cs">
@@ -354,12 +365,6 @@
     </Compile>
     <Compile Include="Views\GalleryUC.Designer.cs">
       <DependentUpon>GalleryUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ImageConfigPanelUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\ImageConfigPanelUC.Designer.cs">
-      <DependentUpon>ImageConfigPanelUC.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Forms\SetUnitForm.resx">
       <DependentUpon>SetUnitForm.cs</DependentUpon>
@@ -403,35 +408,38 @@
     <EmbeddedResource Include="Forms\SelectCamera.resx">
       <DependentUpon>SelectCamera.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\CapturePara.resx">
-      <DependentUpon>CapturePara.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\CaptureParaPanel.resx">
+      <DependentUpon>CaptureParaPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ImagePara.resx">
-      <DependentUpon>ImagePara.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\VideoParaPanel.resx">
+      <DependentUpon>VideoParaPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\CameraPara.resx">
-      <DependentUpon>CameraPara.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\CameraParaPanel.resx">
+      <DependentUpon>CameraParaPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ImageParaPanel.resx">
+      <DependentUpon>ImageParaPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MeasurePanel.resx">
       <DependentUpon>MeasurePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\RWParameter.resx">
-      <DependentUpon>RWParameter.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\CameraSettingPanel.resx">
+      <DependentUpon>CameraSettingPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WaitForm.resx">
       <DependentUpon>WaitForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\XHistogramPanel.resx">
-      <DependentUpon>XHistogramPanel.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\HistogramPanel.resx">
+      <DependentUpon>HistogramPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\TrackBarPanel.resx">
+      <DependentUpon>TrackBarPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\AdvancedSettingForm.resx">
       <DependentUpon>AdvancedSettingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\GalleryUC.resx">
       <DependentUpon>GalleryUC.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ImageConfigPanelUC.resx">
-      <DependentUpon>ImageConfigPanelUC.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="Properties\Settings.settings">

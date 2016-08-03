@@ -15,9 +15,12 @@ using xview.common;
 using xview.utils;
 using xview.UserControls;
 using DrawTools;
+using xview.Measure;
 
 namespace xview.Forms
 {
+
+    //TODO: PreviewForm与ImageForm需要合并
     public partial class PreviewForm : Form, xview.common.IZoomable, xview.Draw.IDrawForm
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(PreviewForm));
@@ -369,9 +372,13 @@ namespace xview.Forms
                 if (!_isCustomDrawing)
                 {
                     //test code 原先刷新帧图像的方法
-                    //emDSCameraStatus status = XCamera.CameraDisplayRGB24(m_iCam, pBmp24, ref sFrInfo);
+                    emDSCameraStatus status = XCamera.CameraDisplayRGB24(m_iCam, pBmp24, ref sFrInfo);
                     //尝试新的方法
                     //imageBox.Image = _frameImage;
+                }
+                else
+                {
+                    imageBox.Image = _frameImage;
                 }
                     
                 return 0;
@@ -765,11 +772,11 @@ namespace xview.Forms
 
         private void SyncImageBack()
         {
-            //_imageBack.ZoomFactor = _imageBox.ZoomFactor;
-            _imageBack.Width = _imageBox.Width;
-            _imageBack.Height = _imageBox.Height;
-            _imageBack.Left = _imageBox.Left;
-            _imageBack.Top = _imageBox.Top;
+            ////_imageBack.ZoomFactor = _imageBox.ZoomFactor;
+            //_imageBack.Width = _imageBox.Width;
+            //_imageBack.Height = _imageBox.Height;
+            //_imageBack.Left = _imageBox.Left;
+            //_imageBack.Top = _imageBox.Top;
 
         }
 
@@ -1013,6 +1020,7 @@ namespace xview.Forms
 
         public void SetActiveDrawTool(ImageDrawBox.DrawToolType drawToolType)
         {
+            PreviewForm._isCustomDrawing = true;
             _imageBox.ActiveTool = drawToolType;
         }
 
@@ -1028,20 +1036,37 @@ namespace xview.Forms
 
         public List<MeasureListItem> GetMeasureListData()
         {
-            return _imageBox.GetMeasureListData();
+            return _imageBox.GetMeasureListData(this.measureScale);
         }
 
         public List<MeasureStatisticItem> GetMeasureStatisticData()
         {
-            return _imageBox.GetMeasureStatisticData();
+            return _imageBox.GetMeasureStatisticData(this.measureScale);
         }
 
-        public void SetUnit(double pixelsPerUm)
+        private MeasureScale measureScale = null;
+        public void SetScale(MeasureScale scale)
         {
+            this.measureScale = scale;
             if (mainForm != null)
             {
-                mainForm.UpdatePixelsPerUm(pixelsPerUm);
+                mainForm.UpdateScaleLabel(scale.ToString());
             }
+        }
+
+        public void SetROIType(ImageDrawBox.ROIType roiType)
+        {
+            _imageBox.SetROIType = roiType;
+        }
+
+        public void ShowSetScaleForm()
+        {
+            _imageBox.ShowSetScaleForm();
+        }
+
+        public MeasureScale GetScale()
+        {
+            return measureScale;
         }
 
     }

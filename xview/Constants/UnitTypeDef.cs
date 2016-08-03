@@ -8,9 +8,9 @@ namespace xview.Constants
     public enum UnitTypeDef
     {
         Pixel = 0,
-        Centimeter,//厘米
-        Milimeter, //毫米
-        Micrometer, //微米
-        Nanometer //纳米
+        Centimeter = 1,//厘米
+        Milimeter = 2,  //毫米
+        Micrometer = 3, //微米
+        Nanometer =4 //纳米
     }
 }

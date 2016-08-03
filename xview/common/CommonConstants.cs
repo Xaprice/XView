@@ -12,6 +12,7 @@ namespace xview
         public const string DEFAULT_PICTURE_PATH = "C:\\XView\\Pictures";
         public const string DEFAULT_VIDEO_PATH = "C:\\XView\\Videos";
         public const string DEFAULT_INI_PATH = "C:\\XView\\Settings";
+        public const string DEFAULT_PROGRAM_CONFIG_FILE_PATH = "C:\\XView\\xview.xml";
     }
 
     public class CameraListGridFieldNames
@@ -46,9 +47,4 @@ namespace xview
         WB_ROI
     }
 
-    public static class ReturnValues
-    {
-        public const int Success = 1;
-        public const int Failure = 4;
-    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace xview.UserControls
 {
-    partial class CapturePara
+    partial class CaptureParaPanel
     {
         /// <summary> 
         /// 必需的设计器变量。
@@ -617,13 +617,13 @@
             this.emptySpaceItem2.Text = "emptySpaceItem2";
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
-            // CapturePara
+            // CaptureParaPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.layoutControl1);
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "CapturePara";
+            this.Name = "CaptureParaPanel";
             this.Size = new System.Drawing.Size(220, 503);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);

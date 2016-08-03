@@ -11,12 +11,14 @@ using xview.utils;
 
 namespace xview.UserControls
 {
-    //该页面中所有的改动都可以考虑以消息的形式发出，而不是调用相机实例？
-    public partial class CapturePara : UserControl
+    /// <summary>
+    ///  相机采集面板
+    /// </summary>
+    public partial class CaptureParaPanel : UserControl
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(CapturePara));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(CaptureParaPanel));
 
-        public CapturePara()
+        public CaptureParaPanel()
         {
             InitializeComponent();
         }

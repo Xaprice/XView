@@ -10,11 +10,25 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using xview.Draw;
+using xview.Forms;
+using xview.Measure;
 
 namespace xview.UserControls
 {
+    /// <summary>
+    /// 用于绘制图像的类
+    /// 支持图像的显示和交互式绘制
+    /// </summary>
     public class ImageDrawBox : ImageBox, DocumentDirtyObserver
     {
+        public enum ROIType
+        {
+            NONE_ROI=0,
+            AEROI,
+            WB_ROI,
+            PVW_ROI
+        }
+
         public enum DrawingMode
         {
             Measure,//测量
@@ -80,6 +94,9 @@ namespace xview.UserControls
             get{return drawingMode;}
             set{drawingMode = value;}
         }
+
+        public ROIType SetROIType { get; set; }
+        //public Rectangle ROI { get; set; }
 
         //--------------init
         public void init()
@@ -304,27 +321,39 @@ namespace xview.UserControls
         }
 
         //--------------statistic
-        public List<MeasureListItem> GetMeasureListData()
+        //TODO:这部分逻辑需要重构
+        public List<MeasureListItem> GetMeasureListData(MeasureScale scale)
         {
             List<MeasureListItem> list = new List<MeasureListItem>();
             for (int i = 0; i < this.GraphicsList.Count; i++)
             {
                 DrawObject drawObj = this.GraphicsList[i];
+                //TODO: 计算测量的逻辑应该从绘图对象中分离出来
                 MeasureListItem item = drawObj.GetMeasureListItem();
                 if (item != null)
                 {
-                    item.Unit = "像素";//暂时单位都是像素
+                    //如果已经定过标，将值进行转换
+                    if (scale != null && scale.UnitType != Constants.UnitTypeDef.Pixel)
+                    {
+                        double ratio = scale.UnitValue / scale.Pixels;
+                        item.AdjustByScale(ratio);
+                        item.Unit = scale.UnitTypeDisplayName;
+                    }
+                    else
+                    {
+                        item.Unit = "像素";
+                    }
                     list.Add(item);
                 }
             }
             return list;
         }
 
-        public List<MeasureStatisticItem> GetMeasureStatisticData()
+        public List<MeasureStatisticItem> GetMeasureStatisticData(MeasureScale scale)
         {
             List<MeasureStatisticItem> list = new List<MeasureStatisticItem>();
 
-            List<MeasureListItem> measureList = this.GetMeasureListData();
+            List<MeasureListItem> measureList = this.GetMeasureListData(scale);
             List<MeasureListItem> lineList = new List<MeasureListItem>();
             List<MeasureListItem> rectangleList = new List<MeasureListItem>();
             List<MeasureListItem> polylineList = new List<MeasureListItem>();
@@ -349,6 +378,10 @@ namespace xview.UserControls
                 }
             }
             string unit = "像素";
+            if(measureList.Count != 0)
+            {
+                unit = measureList[0].Unit;
+            }
             if(lineList.Count != 0)
             {
                 MeasureStatisticItem lineLenItem = new MeasureStatisticItem();
@@ -420,13 +453,51 @@ namespace xview.UserControls
             return list;
         }
 
-        public void SetUnit(double pxPerUm)
+        //public void SetUnit(double pxPerUm)
+        //{
+        //    if(DrawForm != null)
+        //        DrawForm.SetUnit(pxPerUm);
+        //}
+        public void SetScale(MeasureScale scale)
         {
-            if(DrawForm != null)
-                DrawForm.SetUnit(pxPerUm);
+            if (DrawForm != null)
+                DrawForm.SetScale(scale);
         }
 
-        
+        public void SetROI(Rectangle roi)
+        {
+            if (SetROIType  == ROIType.AEROI)
+            {
+                //XCamera.GetInstance().SetAeState(false);
+                System.Threading.Thread.Sleep(20);
+                if (XCamera.GetInstance().SetAEWindow(roi.X, roi.Y, roi.Width, roi.Height))
+                {
+                    //bool aeState;
+                    //XCamera.GetInstance().GetAeState(out aeState);
+                    //logger.Debug(string.Format("设置自动曝光窗口成功！roi: X: {0}, Y: {1}, W: {2}, H: {3}, scale: {4}", roi.X, roi.Y, roi.Width, roi.Height, scale));
+                    //_logger.Debug("aeState: " + aeState.ToString());
+                    //XCamera.GetInstance().SetAeState(true);
+                }
+            }
+            else if (SetROIType == ROIType.WB_ROI)
+            {
+                XCamera.GetInstance().SetWBWindow(roi.X, roi.Y, roi.Width, roi.Height);
+                XCamera.GetInstance().SetOnceWB();
+            }
+            else if (SetROIType == ROIType.PVW_ROI)
+            {
+                XCamera.GetInstance().SetPreviewROI(roi.X, roi.Y, roi.Width, roi.Height);
+                XCamera.GetInstance().Play();
+            }
+        }
+
+        public void ShowSetScaleForm()
+        {
+            SetUnitForm setUnitForm = new SetUnitForm(this, -1);
+            setUnitForm.ShowDialog();
+        }
+
+
 
     }
 }

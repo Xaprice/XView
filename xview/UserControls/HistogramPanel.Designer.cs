@@ -1,6 +1,6 @@
 ﻿namespace xview.UserControls
 {
-    partial class XHistogramPanel
+    partial class HistogramPanel
     {
         /// <summary> 
         /// 必需的设计器变量。
